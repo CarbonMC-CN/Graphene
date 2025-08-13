@@ -24,6 +24,12 @@ public class CoolConfig {
     public static final ForgeConfigSpec.DoubleValue FIXED_TIMESTEP_INTERVAL;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> LOD_PARTICLE_WHITELIST;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> LOD_PARTICLE_BLACKLIST;
+    //一些啸东西
+    public static final ForgeConfigSpec.BooleanValue fpsoo;
+    //yellow d/o（r）g/e的啸东西
+    public static final ForgeConfigSpec.BooleanValue enableReflex;
+    public static final ForgeConfigSpec.LongValue   reflexOffsetNs;
+    public static final ForgeConfigSpec.BooleanValue reflexDebug;
     //
     public static final ForgeConfigSpec.BooleanValue skipOutlineWhenNoGlowing;
     //minecraft高版本优化内容移植
@@ -104,6 +110,18 @@ public class CoolConfig {
     public static final ForgeConfigSpec.BooleanValue DEBUG_LOGGING;
 
     static {
+        BUILDER.push("Reflex");
+        enableReflex = BUILDER
+                .comment("启用类似 NVIDIA Reflex 的动态低延迟调度")
+                .define("enableReflex", false);
+        reflexOffsetNs = BUILDER
+                .comment("Reflex 微调等待时间（纳秒）。",
+                        "GPU 吃不满就加正数；队列堆积就加负数。")
+                .defineInRange("reflexOffsetNs", 0L, -1_000_000L, 1_000_000L);
+        reflexDebug = BUILDER
+                .comment("在日志中输出每帧等待时间，方便调试")
+                .define("reflexDebug", false);
+        BUILDER.pop();
         BUILDER.push("粒子优化 | particle Optimization");
         ENABLE_PARTICLE_OPTIMIZATION = BUILDER.comment(
                         "启用粒子系统优化",
@@ -160,6 +178,9 @@ public class CoolConfig {
         skipOutlineWhenNoGlowing = BUILDER
                 .comment("Skip outline rendering when no glowing entities are in view")
                 .define("skipOutlineWhenNoGlowing", true);
+        fpsoo = BUILDER
+                .comment("减少渲染延迟，把「把最终画面从 MC 的离屏 FBO（MainTarget）拷贝到屏幕」这一步，由“画一个全屏三角形”改成了“一次 GPU 内部的 glBlitFramebuffer 指令”")
+                .define("fpsoo", true);
         BUILDER.pop();
         BUILDER.push("chest_optimization");
 

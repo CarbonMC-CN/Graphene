@@ -35,13 +35,16 @@
     "client.lang.uimixin",
     "client.light.FastBamboo",
     "client.renderer.fix.EntityNameRendererMixin",
+    "client.renderer.jump.BlockFaceCullingMixin",
     "client.renderer.jump.EntityJumpRendererMixin",
     "client.renderer.other.MixinPoseStack",
     "client.renderer.other.MixinVertexConsumer",
-    "client.renderer.sky.MixinWorldRenderer",
-    "client.renderer.particle.MixinParticleEngine",
     "client.renderer.particle.MixinParticle",
-    "client.renderer.particle.ParticleAccessor"
+    "client.renderer.particle.MixinParticleEngine",
+    "client.renderer.particle.ParticleAccessor",
+    "client.renderer.reflex.ReflexSchedulerMixin",
+    "client.renderer.skip.GameRendererMixin",
+    "client.renderer.sky.MixinWorldRenderer"
   ],
   "injectors": {
     "defaultRequire": 1,
