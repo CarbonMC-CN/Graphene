@@ -122,11 +122,14 @@ public abstract class ItemEntityMixin {
 
     @Unique
     private boolean isValidMergeTarget(ItemEntity self, ItemEntity other, int listMode, List<? extends String> itemList) {
+        int configMax = CoolConfig.maxStackSize.get() > 0 ? CoolConfig.maxStackSize.get() : Integer.MAX_VALUE;
+        boolean lockMaxedStacks = CoolConfig.lockMaxedStacks.get();
 
         return self != other &&
                 !other.isRemoved() &&
                 isSameItem(self.getItem(), other.getItem()) &&
-                isMergeAllowed(other.getItem(), listMode, itemList);
+                isMergeAllowed(other.getItem(), listMode, itemList) &&
+                (! lockMaxedStacks || other.getItem().getCount() < configMax);
     }
 
     @Unique
