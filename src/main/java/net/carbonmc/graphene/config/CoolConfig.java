@@ -74,6 +74,7 @@ public class CoolConfig {
     public static ForgeConfigSpec.BooleanValue OpenIO;
     public static ForgeConfigSpec.IntValue maxStackSize;
     public static ForgeConfigSpec.DoubleValue mergeDistance;
+    public static ForgeConfigSpec.BooleanValue lockMaxedStacks;
     public static ForgeConfigSpec.IntValue listMode;
     public static ForgeConfigSpec.ConfigValue<List<? extends String>> itemList;
     public static ForgeConfigSpec.BooleanValue showStackCount;
@@ -370,6 +371,10 @@ public class CoolConfig {
                         "在合并后的物品上显示堆叠数量",
                         "Show stack count on merged items")
                 .define("showStackCount", true);
+        lockMaxedStacks = BUILDER.comment(
+                        "当物品堆叠达到最大时锁定，不再参与合并",
+                        "Lock stacks that have reached the maximum size to prevent further merging")
+                .define("lockMaxedStacks", true);
         BUILDER.pop(); // 堆叠合并
 
         BUILDER.push("自定义堆叠 | Custom Stack Size");
