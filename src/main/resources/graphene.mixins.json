@@ -6,7 +6,6 @@
   "refmap": "graphene.refmap.json",
   "mixins": [
     "MOFRP.EnderPearlMixin",
-    "MOFRP.EntityCollisionMixin",
     "other.DFUKILLER",
     "other.EventListenerTransformerMixin",
     "other.MixinBoat",
@@ -19,7 +18,11 @@
     "stack.fix.BucketItem",
     "stack.fix.BucketItemAccessor",
     "tickstop.EntityTypeMixin",
+    "villager.VillagerMoveOptimizationMixin",
     "tickstop.LevelMixin"
+  ],
+  "server": [
+    "server.MixinWorldGenRegion"
   ],
   "client": [
     "client.chest.OptimizedChestBlockMixin",
@@ -28,14 +31,12 @@
     "client.culling.EntityRendererMixin",
     "client.culling.LeafRenderMixin",
     "client.culling.LevelRendererMixin",
-    "client.fix.EnchantmentMenuMixin",
     "client.fps.MinecraftMixin",
     "client.fps.OptionsMixin",
     "client.lang.mcmixinx",
     "client.lang.uimixin",
     "client.light.FastBamboo",
     "client.renderer.fix.EntityNameRendererMixin",
-    "client.renderer.jump.BlockFaceCullingMixin",
     "client.renderer.jump.EntityJumpRendererMixin",
     "client.renderer.other.MixinPoseStack",
     "client.renderer.other.MixinVertexConsumer",

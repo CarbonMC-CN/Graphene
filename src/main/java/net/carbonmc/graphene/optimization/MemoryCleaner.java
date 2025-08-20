@@ -3,9 +3,11 @@ package net.carbonmc.graphene.optimization;
 import net.carbonmc.graphene.config.CoolConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-
+@OnlyIn(Dist.CLIENT)
 public class MemoryCleaner {
     private long lastCleanTime = 0;
 

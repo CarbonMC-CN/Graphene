@@ -18,13 +18,10 @@ public abstract class EntityNameRendererMixin<T extends Entity> {
             remap = true
     )
     private void onShouldShowName(T entity, CallbackInfoReturnable<Boolean> cir) {
-        // Always show name for players
         if (entity instanceof Player) {
             cir.setReturnValue(true);
             return;
         }
-
-        // Fall back to default behavior for other entities
         if (entity.shouldShowName()) {
             cir.setReturnValue(true);
         }

@@ -1,19 +1,26 @@
 modLoader = "javafml"
 loaderVersion="[0,)"
-license = "${mod_license}"
+license = "MIT"
 
 [[mods]]
-modId = "${mod_id}"
-version = "${mod_version}"
-displayName = "${mod_name}"
-authors = "${mod_authors}"
+modId = "graphene"
+version = "1.5.0"
+displayName = "Graphene"
+authors = "CarbonMC, ZCRAFT"
 logo = "logo.png"
 
-description = '''${mod_description}'''
+description = '''One of the best optimization mods'''
 
-[[dependencies."${mod_id}"]]
+[[dependencies.graphene]]
 modId = "minecraft"
 mandatory = true
 versionRange="[1.7.10,1.22]"
 ordering = "NONE"
 side = "BOTH"
+
+[[dependencies.graphene]]
+modId = "cloth_config"
+mandatory = false
+versionRange="0.0.1"
+ordering = "NONE"
+side = "CLIENT"

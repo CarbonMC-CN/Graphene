@@ -26,14 +26,17 @@ public class CoolConfig {
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> LOD_PARTICLE_BLACKLIST;
     //一些啸东西
     public static final ForgeConfigSpec.BooleanValue fpsoo;
+
+//村民
+    public static final ForgeConfigSpec.BooleanValue VILLAGER_MOVE_OPTIMIZE;
     //yellow d/o（r）g/e的啸东西
     public static final ForgeConfigSpec.BooleanValue enableReflex;
     public static final ForgeConfigSpec.LongValue   reflexOffsetNs;
     public static final ForgeConfigSpec.BooleanValue reflexDebug;
+    public static final ForgeConfigSpec.IntValue MAX_FPS;
     //
     public static final ForgeConfigSpec.BooleanValue skipOutlineWhenNoGlowing;
     //minecraft高版本优化内容移植
-    public static final ForgeConfigSpec.BooleanValue ENABLE_SUBSTEP;
     public static final ForgeConfigSpec.BooleanValue FIX_PEARL_LEAK;
     public static final ForgeConfigSpec.BooleanValue FIX_PROJECTILE_LERP;
     // ==================== 渲染优化 | Rendering Optimization ====================
@@ -74,6 +77,7 @@ public class CoolConfig {
     public static ForgeConfigSpec.BooleanValue OpenIO;
     public static ForgeConfigSpec.IntValue maxStackSize;
     public static ForgeConfigSpec.DoubleValue mergeDistance;
+    public static ForgeConfigSpec.BooleanValue lockMaxedStacks;
     public static ForgeConfigSpec.IntValue listMode;
     public static ForgeConfigSpec.ConfigValue<List<? extends String>> itemList;
     public static ForgeConfigSpec.BooleanValue showStackCount;
@@ -118,6 +122,9 @@ public class CoolConfig {
                 .comment("Reflex 微调等待时间（纳秒）。",
                         "GPU 吃不满就加正数；队列堆积就加负数。")
                 .defineInRange("reflexOffsetNs", 0L, -1_000_000L, 1_000_000L);
+        MAX_FPS = BUILDER
+                .comment("Hard framerate cap (0 = disable)")
+                .defineInRange("maxFps", 0, 0, 1000);
         reflexDebug = BUILDER
                 .comment("在日志中输出每帧等待时间，方便调试")
                 .define("reflexDebug", false);
@@ -169,7 +176,6 @@ public class CoolConfig {
 
         BUILDER.pop(); // 粒子优化
         BUILDER.push("高版本mc优化移植");
-        ENABLE_SUBSTEP   = BUILDER.define("enableSubStepCollision", true);
         FIX_PEARL_LEAK   = BUILDER.define("fixPearlChunkLeak", true);
         FIX_PROJECTILE_LERP = BUILDER.define("fixProjectileInterpolation", true);
         BUILDER.pop();
@@ -181,6 +187,7 @@ public class CoolConfig {
         fpsoo = BUILDER
                 .comment("减少渲染延迟，把「把最终画面从 MC 的离屏 FBO（MainTarget）拷贝到屏幕」这一步，由“画一个全屏三角形”改成了“一次 GPU 内部的 glBlitFramebuffer 指令”")
                 .define("fpsoo", true);
+
         BUILDER.pop();
         BUILDER.push("chest_optimization");
 
@@ -313,6 +320,9 @@ public class CoolConfig {
                         "启用实体tick优化",
                         "Enable entity tick optimization")
                 .define("optimizeEntities", true);
+        VILLAGER_MOVE_OPTIMIZE = BUILDER
+                .comment("优化村民在1x1空间内的AI")
+                .define("villagerMoveOptimize", true);
         horizontalRange = BUILDER.comment(
                         "水平检测范围(方块)",
                         "Horizontal detection range (blocks)")
@@ -370,6 +380,10 @@ public class CoolConfig {
                         "在合并后的物品上显示堆叠数量",
                         "Show stack count on merged items")
                 .define("showStackCount", true);
+        lockMaxedStacks = BUILDER.comment(
+                        "当物品堆叠达到最大时锁定，不再参与合并",
+                        "Lock stacks that have reached the maximum size to prevent further merging")
+                .define("lockMaxedStacks", true);
         BUILDER.pop(); // 堆叠合并
 
         BUILDER.push("自定义堆叠 | Custom Stack Size");

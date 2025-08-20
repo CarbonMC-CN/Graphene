@@ -8,29 +8,29 @@ import me.shedaniel.clothconfig2.impl.builders.SubCategoryBuilder;
 import net.carbonmc.graphene.config.CoolConfig;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.util.List;
-
+@OnlyIn(Dist.CLIENT)
 public final class ClothConfigScreenFactory {
 
     public static Screen create(Screen parent) {
         ConfigBuilder builder = ConfigBuilder.create()
                 .setParentScreen(parent)
-                .setTitle(Component.literal("Graphene 配置"))
+                .setTitle(Component.literal("⚙ Graphene 配置"))
                 .transparentBackground()
                 .setSavingRunnable(CoolConfig.SPEC::save);
 
         ConfigEntryBuilder eb = builder.entryBuilder();
 
         ConfigCategory compat = builder.getOrCreateCategory(Component.literal("高版本优化移植"));
-        compat.addEntry(bool(eb, "启用子步碰撞", CoolConfig.ENABLE_SUBSTEP));
         compat.addEntry(bool(eb, "修复珍珠泄漏", CoolConfig.FIX_PEARL_LEAK));
         compat.addEntry(bool(eb, "修复抛射物插值", CoolConfig.FIX_PROJECTILE_LERP));
 
         ConfigCategory render = builder.getOrCreateCategory(Component.literal("渲染优化"));
         render.addEntry(bool(eb, "无发光实体时跳过轮廓", CoolConfig.skipOutlineWhenNoGlowing));
-
         SubCategoryBuilder fps = eb.startSubCategory(Component.literal("降低渲染延迟"));
         fps.add(bool(eb, "启用优化", CoolConfig.fpsoo));
         render.addEntry(fps.build());
@@ -47,6 +47,7 @@ public final class ClothConfigScreenFactory {
         reflex.addEntry(bool(eb, "启用 Reflex", CoolConfig.enableReflex));
         reflex.addEntry(longField(eb, "Reflex 偏移 (ns)",
                 -1_000_000L, 1_000_000L, CoolConfig.reflexOffsetNs));
+        reflex.addEntry(intSlider(eb, "Reflex 帧率上限", 0, 1000, CoolConfig.MAX_FPS));
 
         SubCategoryBuilder cull = eb.startSubCategory(Component.literal("高级剔除"));
         cull.add(bool(eb, "启用剔除", CoolConfig.ENABLEDCULL));
@@ -100,6 +101,7 @@ public final class ClothConfigScreenFactory {
         ConfigCategory entity = builder.getOrCreateCategory(Component.literal("实体优化"));
         entity.addEntry(bool(eb, "禁用实体碰撞", CoolConfig.disableEntityCollisions));
         entity.addEntry(bool(eb, "实体Tick优化", CoolConfig.optimizeEntities));
+        entity.addEntry(bool(eb, "村民优化", CoolConfig.VILLAGER_MOVE_OPTIMIZE));
         entity.addEntry(intSlider(eb, "水平范围", 1, 256, CoolConfig.horizontalRange));
         entity.addEntry(intSlider(eb, "垂直范围", 1, 256, CoolConfig.verticalRange));
         entity.addEntry(bool(eb, "忽略死亡实体", CoolConfig.ignoreDeadEntities));
@@ -110,6 +112,7 @@ public final class ClothConfigScreenFactory {
         item.addEntry(bool(eb, "启用物品优化", CoolConfig.OpenIO));
         item.addEntry(intSlider(eb, "最大堆叠", -1, 9999, CoolConfig.maxStackSize));
         item.addEntry(doubleField(eb, "合并半径", 0.1, 10, CoolConfig.mergeDistance));
+        item.addEntry(bool(eb, "掉落物锁", CoolConfig.lockMaxedStacks));
         item.addEntry(intSlider(eb, "列表模式", 0, 2, CoolConfig.listMode));
         item.addEntry(bool(eb, "显示堆叠数", CoolConfig.showStackCount));
         item.addEntry(bool(eb, "启用自定义堆叠", CoolConfig.ENABLED));
@@ -141,7 +144,6 @@ public final class ClothConfigScreenFactory {
         return builder.build();
     }
 
-    /* ------------- 工具方法 ------------- */
     private static BooleanListEntry bool(ConfigEntryBuilder eb,
                                          String key,
                                          ForgeConfigSpec.BooleanValue value) {
