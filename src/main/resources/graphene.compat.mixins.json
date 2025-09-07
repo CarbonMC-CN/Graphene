@@ -12,7 +12,7 @@
     "distanthorizons.ForgeServerProxyMixin"
   ],
   "injectors": {
-    "defaultRequire": 1,
+    "defaultRequire": 0,
     "maxShiftBy": 5
   }
 }

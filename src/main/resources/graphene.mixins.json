@@ -18,8 +18,12 @@
     "stack.fix.BucketItem",
     "stack.fix.BucketItemAccessor",
     "tickstop.EntityTypeMixin",
+    "tickstop.LevelMixin",
     "villager.VillagerMoveOptimizationMixin",
-    "tickstop.LevelMixin"
+    "chunk.ChunkGeneratorMixin",
+    "chunk.ChunkSectionBiomeMixin",
+    "chunk.LevelChunkSectionOptimizedMixin",
+    "chunk.ChunkEntityLoadingMixin"
   ],
   "server": [
     "server.MixinWorldGenRegion"
@@ -36,6 +40,7 @@
     "client.lang.mcmixinx",
     "client.lang.uimixin",
     "client.light.FastBamboo",
+    "client.light.MixinDynamicGraphMinFixedPoint",
     "client.renderer.fix.EntityNameRendererMixin",
     "client.renderer.jump.EntityJumpRendererMixin",
     "client.renderer.other.MixinPoseStack",
@@ -48,7 +53,7 @@
     "client.renderer.sky.MixinWorldRenderer"
   ],
   "injectors": {
-    "defaultRequire": 1,
+    "defaultRequire": 0,
     "maxShiftBy": 5
   },
   "overwrites": {

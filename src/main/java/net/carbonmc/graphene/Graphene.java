@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class Graphene {
 	public static final Logger LOGGER = LogManager.getLogger();
 	public static final String MODID = "graphene";
-	public static final String VERSION = "1.5.0";
+	public static final String VERSION = "1.6.0";
 	private static final AtomicBoolean isInitialized = new AtomicBoolean(false);
 	public static File Graphene_EVENTS_LOG = new File("log/graphene-event-debug.log");
 
@@ -52,7 +52,6 @@ public class Graphene {
 		LOGGER.info("Initializing Graphene MOD v{}", VERSION);
 
 		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> GrapheneClient::init);
-
 		ModLoadingContext.get().registerExtensionPoint(
 				IExtensionPoint.DisplayTest.class,
 				() -> new IExtensionPoint.DisplayTest(() -> "ANY", (remote, isServer) -> true)
@@ -60,6 +59,7 @@ public class Graphene {
 	}
 
 	private void setup(final FMLCommonSetupEvent event) {
+		LOGGER.info("Graphene Crash Protection initialized");
 		LOGGER.info("Graphene Mod 初始化完成");
 		LOGGER.info("Graphene-CarbonMC官方QQ群：372378451");
 		Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());

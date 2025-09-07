@@ -98,6 +98,10 @@ public final class ClothConfigScreenFactory {
         inactive.add(intSlider(eb, "失焦视距", 2, 12, CoolConfig.INACTIVE_RENDER_DISTANCE));
         render.addEntry(inactive.build());
 
+        ConfigCategory light = builder.getOrCreateCategory(Component.literal("光照性能优化"));
+        light.addEntry(bool(eb, "光照优化", CoolConfig.ENABLE_FIXED_LIGHT));
+        light.addEntry(bool(eb, "竹子光照优化-取消竹子无意义的光照计算", CoolConfig.BambooLight));
+
         ConfigCategory entity = builder.getOrCreateCategory(Component.literal("实体优化"));
         entity.addEntry(bool(eb, "禁用实体碰撞", CoolConfig.disableEntityCollisions));
         entity.addEntry(bool(eb, "实体Tick优化", CoolConfig.optimizeEntities));
@@ -124,7 +128,10 @@ public final class ClothConfigScreenFactory {
         mem.addEntry(bool(eb, "GC触发", CoolConfig.ENABLE_GC));
 
         ConfigCategory chunk = builder.getOrCreateCategory(Component.literal("区块优化"));
-        chunk.addEntry(bool(eb, "主动卸载区块", CoolConfig.aggressiveChunkUnloading));
+        chunk.addEntry(bool(eb, "区块加载速度优化-主", CoolConfig.XtackChunk));
+        chunk.addEntry(bool(eb, "区块优化-Beta(效果未知)", CoolConfig.XtackChunk_BETA));
+        chunk.addEntry(bool(eb, "区块加载速度优化-缓慢实体-Beta(后果未知)", CoolConfig.FAST_CHUNK_ENTITY));
+        chunk.addEntry(bool(eb, "主动卸载区块-Beta(后果未知)", CoolConfig.aggressiveChunkUnloading));
         chunk.addEntry(intSlider(eb, "区块卸载延迟(秒)", 10, 600, CoolConfig.chunkUnloadDelay));
 
         ConfigCategory async = builder.getOrCreateCategory(Component.literal("异步优化"));
@@ -133,8 +140,8 @@ public final class ClothConfigScreenFactory {
         async.addEntry(bool(eb, "出错后禁用异步", CoolConfig.DISABLE_ASYNC_ON_ERROR));
         async.addEntry(intSlider(eb, "异步事件超时(秒)", 1, 10, CoolConfig.ASYNC_EVENT_TIMEOUT));
         async.addEntry(bool(eb, "等待异步完成", CoolConfig.WAIT_FOR_ASYNC_EVENTS));
-        async.addEntry(intSlider(eb, "最大CPU核心", 2, 9999, CoolConfig.maxCPUPro));
-        async.addEntry(intSlider(eb, "最大线程数", 2, 9999, CoolConfig.maxthreads));
+        async.addEntry(intSlider(eb, "最大CPU核心", 2, 128, CoolConfig.maxCPUPro));
+        async.addEntry(intSlider(eb, "最大线程数", 2, 256, CoolConfig.maxthreads));
 
         ConfigCategory evt = builder.getOrCreateCategory(Component.literal("事件系统"));
         evt.addEntry(bool(eb, "启用异步事件系统", CoolConfig.FEATURE_ENABLED));

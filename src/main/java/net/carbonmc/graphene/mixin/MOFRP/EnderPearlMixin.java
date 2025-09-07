@@ -30,14 +30,14 @@ public class EnderPearlMixin {
         }
     }
 
-    @Inject(
-            method = "onHit",
-            at = @At("RETURN")
-    )
+    @Inject(method = "onHit", at = @At("RETURN"))
     private void graphene$onHit(HitResult result, CallbackInfo ci) {
         if (!CoolConfig.FIX_PEARL_LEAK.get()) return;
 
         ThrownEnderpearl pearl = (ThrownEnderpearl) (Object) this;
+
+        if (pearl.level().isClientSide()) return;
+
         ServerLevel level = (ServerLevel) pearl.level();
         UUID owner = pearl.getOwner() != null ? pearl.getOwner().getUUID() : null;
         if (owner != null) {

@@ -1,5 +1,6 @@
 package net.carbonmc.graphene.mixin.client.light;
 
+import net.carbonmc.graphene.config.CoolConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.BambooStalkBlock;
@@ -24,6 +25,9 @@ public abstract class FastBamboo {
                                       BlockGetter level,
                                       BlockPos pos,
                                       CallbackInfoReturnable<Float> cir) {
+        if (!CoolConfig.BambooLight.get()) {
+            return;
+        }
         if (state.getBlock() instanceof BambooStalkBlock) {
             cir.setReturnValue(1.0F);
         }

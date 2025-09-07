@@ -21,11 +21,14 @@ public class CoolConfig {
     public static final ForgeConfigSpec.DoubleValue LOD_DISTANCE_THRESHOLD;
     public static final ForgeConfigSpec.DoubleValue LOD_REDUCTION_FACTOR;
     public static final ForgeConfigSpec.BooleanValue ENABLE_FIXED_TIMESTEP;
+
     public static final ForgeConfigSpec.DoubleValue FIXED_TIMESTEP_INTERVAL;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> LOD_PARTICLE_WHITELIST;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> LOD_PARTICLE_BLACKLIST;
     //一些啸东西
     public static final ForgeConfigSpec.BooleanValue fpsoo;
+    //光照
+    public static final ForgeConfigSpec.BooleanValue ENABLE_FIXED_LIGHT;
 
 //村民
     public static final ForgeConfigSpec.BooleanValue VILLAGER_MOVE_OPTIMIZE;
@@ -40,6 +43,7 @@ public class CoolConfig {
     public static final ForgeConfigSpec.BooleanValue FIX_PEARL_LEAK;
     public static final ForgeConfigSpec.BooleanValue FIX_PROJECTILE_LERP;
     // ==================== 渲染优化 | Rendering Optimization ====================
+    public static final ForgeConfigSpec.BooleanValue BambooLight;
     public static final ForgeConfigSpec.BooleanValue ENABLEDCULL;
     public static final ForgeConfigSpec.IntValue CULLING_DEPTH;
     public static final ForgeConfigSpec.DoubleValue REJECTION_RATE;
@@ -93,6 +97,9 @@ public class CoolConfig {
 
     // ==================== 区块优化 | Chunk Optimization ====================
     public static ForgeConfigSpec.BooleanValue aggressiveChunkUnloading;
+    public static ForgeConfigSpec.BooleanValue XtackChunk;
+    public static ForgeConfigSpec.BooleanValue XtackChunk_BETA;
+    public static final ForgeConfigSpec.BooleanValue FAST_CHUNK_ENTITY;
     public static ForgeConfigSpec.IntValue chunkUnloadDelay;
 
     // ==================== 异步优化 | Async Optimization ====================
@@ -114,6 +121,14 @@ public class CoolConfig {
     public static final ForgeConfigSpec.BooleanValue DEBUG_LOGGING;
 
     static {
+        BUILDER.push("Light");
+        ENABLE_FIXED_LIGHT = BUILDER
+                .comment("光照优化")
+                .define("enableFixedLight", true);
+        BambooLight = BUILDER
+                .comment("竹子光照优化")
+                .define("enablebambooFixedLight", true);
+        BUILDER.pop();
         BUILDER.push("Reflex");
         enableReflex = BUILDER
                 .comment("启用类似 NVIDIA Reflex 的动态低延迟调度")
@@ -438,7 +453,17 @@ public class CoolConfig {
 
         // ==================== 区块优化设置 | Chunk Optimization Settings ====================
         BUILDER.comment("区块优化 | Chunk Optimization").push("chunk_optimization");
-
+        XtackChunk = BUILDER.comment(
+                        "区块加载速度优化",
+                        "Chunk Optimize")
+                .define("加速区块加载", true);
+        XtackChunk_BETA = BUILDER.comment(
+                        "区块优化-Beta",
+                        "Chunk Optimize Beta")
+                .define("Chunk Optimize Beta", false);
+        FAST_CHUNK_ENTITY = BUILDER
+                .comment("快速区块-实体加载优化")
+                .define("快速区块-实体加载优化延迟加载", true);
         aggressiveChunkUnloading = BUILDER.comment(
                         "主动卸载非活动区块",
                         "Aggressively unload inactive chunks")
@@ -481,11 +506,11 @@ public class CoolConfig {
         maxCPUPro = BUILDER.comment(
                         "异步系统最大CPU核心数",
                         "Max CPU Cores for async system")
-                .defineInRange("maxCPUPro", 8, 2, 9999);
+                .defineInRange("maxCPUPro", 8, 2, 128);
         maxthreads = BUILDER.comment(
                         "最大线程数",
                         "Max Threads for general async operations")
-                .defineInRange("maxthreads", 8, 2, 9999);
+                .defineInRange("maxthreads", 8, 2, 256);
         BUILDER.pop(); // 线程配置
 
         BUILDER.pop(); // 异步优化
