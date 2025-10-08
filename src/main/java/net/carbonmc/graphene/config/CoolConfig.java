@@ -34,9 +34,6 @@ public class CoolConfig {
     public static final ForgeConfigSpec.BooleanValue FIX_PROJECTILE_LERP;
     // ==================== 渲染优化 | Rendering Optimization ====================
     public static final ForgeConfigSpec.BooleanValue BambooLight;
-    public static final ForgeConfigSpec.BooleanValue ENABLEDCULL;
-    public static final ForgeConfigSpec.IntValue CULLING_DEPTH;
-    public static final ForgeConfigSpec.DoubleValue REJECTION_RATE;
     public static final ForgeConfigSpec.BooleanValue REDUCE_FPS_WHEN_INACTIVE;
     public static final ForgeConfigSpec.IntValue INACTIVE_FPS_LIMIT;
     public static final ForgeConfigSpec.BooleanValue REDUCE_RENDER_DISTANCE_WHEN_INACTIVE;
@@ -76,22 +73,8 @@ public class CoolConfig {
     public static ForgeConfigSpec.ConfigValue<List<? extends String>> itemWhitelist;
 
     // ==================== 内存优化 | Memory Optimization ====================
-    public static final ForgeConfigSpec.IntValue MEMORY_CLEAN_INTERVAL;
-    public static final ForgeConfigSpec.BooleanValue ENABLE_GC;
     public static final ForgeConfigSpec.BooleanValue MemoryLeakFix_AE2WTLibCreativeTabLeakFix;
     public static final ForgeConfigSpec.BooleanValue MemoryLeakFix_ScreenshotByteBufferLeakFix;
-    // ==================== 区块优化 | Chunk Optimization ====================
-    public static ForgeConfigSpec.BooleanValue aggressiveChunkUnloading;
-    public static ForgeConfigSpec.BooleanValue OPTIMIZE_BIOME_GENERATION;
-    public static ForgeConfigSpec.IntValue chunkUnloadDelay;
-    public static final ForgeConfigSpec.BooleanValue CTU;
-    public static final ForgeConfigSpec.IntValue CHUNKTHREADS;
-    public static final ForgeConfigSpec.IntValue CHUNKIO_THREADS;
-    public static final ForgeConfigSpec.BooleanValue CHUNK_REDIRECT_IO;
-    public static final ForgeConfigSpec.BooleanValue CHUNk_REDIRECT_LIGHTING;
-    public static final ForgeConfigSpec.IntValue CPU_QUEUE;
-    public static final ForgeConfigSpec.IntValue IO_QUEUE;
-
     public static final ForgeConfigSpec.BooleanValue DEBUG_LOGGING;
     // ==================== NoLog项 | NoLog Options ====================
     public static ForgeConfigSpec.BooleanValue NoOpenGLError;
@@ -101,18 +84,6 @@ public class CoolConfig {
                 .comment("取消OpenGL错误日志")
                 .define("disable opengl error log", true);
         BUILDER.pop();
-        /* BUILDER.push("物品缝合优化 | Item Stitching Fix");
-
-       ITEM_STITCHING_METHOD = BUILDER
-                .comment("物品缝合修复算法",
-                        "VANILLA: 原版",
-                        "UNLERP: 反lerp UV",
-                        "OUTLINE: 轮廓模式",
-                        "PIXEL: 像素级精度",
-                        "FULLQUAD: All;UNLERP/OUTLINE/PIXEL模式可能导致部分物品变为黑紫纹理，但其中PIXEL效果最好")
-                .defineEnum("itemStitchingMethod", ItemVFX.VANILLA);
-
-        BUILDER.pop();*/
         BUILDER.push("Math");
         BUILDER.pop();
         BUILDER.push("Light");
@@ -221,40 +192,6 @@ public class CoolConfig {
                 .defineInRange("maxRenderDistance", 32, 1, 128);
 
         BUILDER.pop();
-
-        // 剔除设置
-        BUILDER.push("高级剔除 | Advanced Culling");
-        ENABLEDCULL = BUILDER.comment(
-                        "启用树叶渲染优化",
-                        "Enable leaf rendering optimizations")
-                .define("enabled", true);
-        CULLING_DEPTH = BUILDER.comment(
-                        "剔除深度 (1-5)，值越高性能越好但可能导致视觉异常",
-                        "Culling depth (1-5), Higher values = better performance but may cause visual artifacts")
-                .defineInRange("cullingDepth", 5, 1, 5);
-        REJECTION_RATE = BUILDER.comment(
-                        "随机剔除率 (0.0-1.0)，防止可见的剔除模式",
-                        "FastRandom rejection rate (0.0-1.0), Prevents visible culling patterns")
-                .defineInRange("rejectionRate", 0.65, 0.0, 1.0);
-
-
-
-        // 异步路径追踪
-        BUILDER.push("路径追踪 | Path Tracing");
-        tracingThreads = BUILDER.comment(
-                        "路径追踪线程数 (1-8)",
-                        "Number of threads for path tracing (1-8)")
-                .defineInRange("tracingThreads", 4, 1, 8);
-        traceDistance = BUILDER.comment(
-                        "最大追踪距离（方块）",
-                        "Max tracing distance in blocks")
-                .defineInRange("traceDistance", 6.0, 1.0, 16.0);
-        fallbackDistance = BUILDER.comment(
-                        "回退简单剔除距离（方块）",
-                        "Fallback simple culling distance in blocks")
-                .defineInRange("fallbackDistance", 16.0, 4.0, 32.0);
-        BUILDER.pop(); // 路径追踪
-
         // 树叶优化
         BUILDER.push("树叶优化 | Leaf Optimization");
         useAdvancedLeafCulling = BUILDER.comment(
@@ -406,16 +343,6 @@ public class CoolConfig {
 
         // ==================== 内存优化设置 | Memory Optimization Settings ====================
         BUILDER.comment("内存优化 | Memory Optimization").push("memory_optimization");
-
-        MEMORY_CLEAN_INTERVAL = BUILDER.comment(
-                        "内存清理间隔(秒)",
-                        "Memory cleanup interval (seconds)")
-                .defineInRange("cleanInterval", 600, 60, 3600);
-
-        ENABLE_GC = BUILDER.comment(
-                        "清理时触发垃圾回收",
-                        "Trigger garbage collection during cleanup")
-                .define("enableGC", false);
         MemoryLeakFix_AE2WTLibCreativeTabLeakFix = BUILDER.comment(
                         "内存泄漏修复_AE2WTLibCreativeTabLeakFix",
                         "MemoryLeakFix_AE2WTLib")
@@ -425,31 +352,6 @@ public class CoolConfig {
                         "MemoryLeakFix_ScreenshotByteBufferLeakFix")
                 .define("enablememoryleakfixScreenshotByteBufferLeakFix", true);
         BUILDER.pop(); // 内存优化
-
-        // ==================== 区块优化设置 | Chunk Optimization Settings ====================
-        BUILDER.comment("区块优化 | Chunk Optimization").push("chunk_optimization");
-        OPTIMIZE_BIOME_GENERATION = BUILDER.comment(
-                        "优化群系生成",
-                        "OPTIMIZE_BIOME_GENERATION")
-                .define("aggressiveChunkUnloading", false);
-        aggressiveChunkUnloading = BUILDER.comment(
-                        "主动卸载非活动区块",
-                        "Aggressively unload inactive chunks")
-                .define("aggressiveChunkUnloading", false);
-        chunkUnloadDelay = BUILDER.comment(
-                        "区块卸载延迟 (秒)",
-                        "Chunk unload delay (seconds)")
-                .defineInRange("chunkUnloadDelay", 60, 10, 600);
-        CTU = BUILDER
-                .comment("是否启用以下功能-请勿在已经启动游戏并且开启此功能时关闭否则会导致意想不到的后果")
-                .define("Chunk++", true);
-        CHUNKTHREADS = BUILDER.comment("线程数").defineInRange("chunkcputhreads", 2, 2, 128);
-        CHUNKIO_THREADS = BUILDER.comment("IO线程").defineInRange("chunkioThreads", 4, 2, 256);
-        CHUNK_REDIRECT_IO = BUILDER.comment("区块优化-ct").define("chunkoptimizeIo", true);
-        CPU_QUEUE = BUILDER.comment("CPU队列最大限制").defineInRange("cpu_queue", 3072, 1536, 8192);
-        IO_QUEUE = BUILDER.comment("IO队列最大限制").defineInRange("io_queue", 1536, 1536, 8192);
-        CHUNk_REDIRECT_LIGHTING = BUILDER.comment("区块优化-l-Beta").define("chunk-l-beta", true);
-        BUILDER.pop(); // 区块优化
 
         // ==================== 调试设置 | Debug Settings ====================
         BUILDER.comment("调试选项 | Debug Options").push("debug");
@@ -464,15 +366,6 @@ public class CoolConfig {
         SPEC = BUILDER.build();
     }
 
-    // ==================== 工具方法 | Utility Methods ====================
-    public static int getCullingDepth() {
-        return CULLING_DEPTH.get();
-    }
-
-
-    public static float getRejectionRate() {
-        return REJECTION_RATE.get().floatValue();
-    }
 
     public static boolean optimizeMangrove() {
         return OPTIMIZE_MANGROVE.get();

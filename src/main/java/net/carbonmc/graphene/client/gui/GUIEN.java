@@ -48,20 +48,6 @@ public final class GUIEN {
         reflex.addEntry(longField(eb, "Reflex Offset (ns)",
                 -1_000_000L, 1_000_000L, CoolConfig.reflexOffsetNs));
         reflex.addEntry(intSlider(eb, "Reflex FPS Cap", 0, 1000, CoolConfig.MAX_FPS));
-
-        SubCategoryBuilder cull = eb.startSubCategory(Component.literal("Advanced Culling"));
-        cull.add(bool(eb, "Enable Culling", CoolConfig.ENABLEDCULL));
-        cull.add(intSlider(eb, "Culling Depth", 1, 5, CoolConfig.CULLING_DEPTH));
-        cull.add(doubleField(eb, "Random Cull Rate", 0, 1, CoolConfig.REJECTION_RATE));
-        render.addEntry(cull.build());
-
-        SubCategoryBuilder trace = eb.startSubCategory(Component.literal("Path Tracing"));
-
-        trace.add(intSlider(eb, "Tracing Threads", 1, 8, CoolConfig.tracingThreads));
-        trace.add(doubleField(eb, "Trace Distance", 1, 16, CoolConfig.traceDistance));
-        trace.add(doubleField(eb, "Fallback Distance", 4, 32, CoolConfig.fallbackDistance));
-        render.addEntry(trace.build());
-
         SubCategoryBuilder leaf = eb.startSubCategory(Component.literal("Leaf Optimization"));
         leaf.add(bool(eb, "Advanced Leaf Culling", CoolConfig.useAdvancedLeafCulling));
         leaf.add(intSlider(eb, "Min Leaf Connections", 1, 6, CoolConfig.minLeafConnections));
@@ -120,21 +106,8 @@ public final class GUIEN {
         item.addEntry(bool(eb, "Item Entity Tick Optimization", CoolConfig.optimizeItems));
 
         ConfigCategory mem = builder.getOrCreateCategory(Component.literal("Memory Optimization"));
-        mem.addEntry(intSlider(eb, "Cleanup Interval (seconds)", 60, 3600, CoolConfig.MEMORY_CLEAN_INTERVAL));
-        mem.addEntry(bool(eb, "Trigger GC", CoolConfig.ENABLE_GC));
         mem.addEntry(bool(eb, "Memory Leak Fix - AE2WTLibCreativeTabLeakFix", CoolConfig.MemoryLeakFix_AE2WTLibCreativeTabLeakFix));
         mem.addEntry(bool(eb, "Memory Leak Fix - ScreenshotByteBufferLeakFix", CoolConfig.MemoryLeakFix_ScreenshotByteBufferLeakFix));
-        ConfigCategory chunk = builder.getOrCreateCategory(Component.literal("Chunk Optimization"));
-        chunk.addEntry(bool(eb, "OPTIMIZE_BIOME_GENERATION", CoolConfig.OPTIMIZE_BIOME_GENERATION));
-        chunk.addEntry(bool(eb, "Aggressive Chunk Unloading - Enable only on low-end machines", CoolConfig.aggressiveChunkUnloading));
-        chunk.addEntry(intSlider(eb, "Chunk Unload Delay (seconds)", 4, 64, CoolConfig.chunkUnloadDelay));
-        chunk.addEntry(bool(eb, "Enable CTU (Do not disable at startup after enabling)", CoolConfig.CTU));
-        chunk.addEntry(intSlider(eb, "Thread Count", 2, 128, CoolConfig.CHUNKTHREADS));
-        chunk.addEntry(intSlider(eb, "IO Thread Count", 2, 256, CoolConfig.CHUNKIO_THREADS));
-        chunk.addEntry(intSlider(eb, "Max CPU Queue", 3072, 8192, CoolConfig.CPU_QUEUE));
-        chunk.addEntry(intSlider(eb, "Max IO Queue", 1536, 8192, CoolConfig.IO_QUEUE));
-        chunk.addEntry(bool(eb, "Chunk Optimization - IO", CoolConfig.CHUNK_REDIRECT_IO));
-        chunk.addEntry(bool(eb, "Chunk Optimization - LIGHT", CoolConfig.CHUNk_REDIRECT_LIGHTING));
         ConfigCategory debug = builder.getOrCreateCategory(Component.literal("Debug"));
         debug.addEntry(bool(eb, "Debug Logging", CoolConfig.DEBUG_LOGGING));
 

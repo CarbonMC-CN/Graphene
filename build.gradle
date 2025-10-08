@@ -130,28 +130,7 @@ dependencies {
         jarJar.ranged(it, "[5.4.0,6.0.0)")
     }
 }
-tasks.register('copyRefmap', Copy) {
-    from layout.buildDirectory.file("tmp/compileJava/compileJava-refmap.json")
-    into layout.buildDirectory.dir("resources/main")
-    rename 'compileJava-refmap.json', "${mod_id}.refmap.json"
-    dependsOn tasks.named('compileJava')
-}
-tasks.named('compileJava') {
-    build.dependsOn verifyBuild
-    doLast {
-        println "=== 编译后检查 ==="
-        def refmapFile = file("${buildDir}/resources/main/${mod_id}.refmap.json")
-        if (refmapFile.exists()) {
-            println "✓ Refmap 文件已生成: ${refmapFile.path}"
-            println "  文件大小: ${refmapFile.length()} bytes"
-        } else {
-            println "⚠ Refmap 文件未找到，可能的位置:"
-            fileTree("${buildDir}").matching { include "**/*.refmap.json" }.each { f ->
-                println "  - ${f.path}"
-            }
-        }
-    }
-}
+
 tasks.named('processResources', ProcessResources).configure {
     dependsOn tasks.named('copyRefmap')
     var replaceProperties = [minecraft_version   : minecraft_version, minecraft_version_range: minecraft_version_range,

@@ -48,12 +48,6 @@ public final class ClothConfigScreenFactory {
                 -1_000_000L, 1_000_000L, CoolConfig.reflexOffsetNs));
         reflex.addEntry(intSlider(eb, "Reflex 帧率上限", 0, 1000, CoolConfig.MAX_FPS));
 
-        SubCategoryBuilder cull = eb.startSubCategory(Component.literal("高级剔除"));
-        cull.add(bool(eb, "启用剔除", CoolConfig.ENABLEDCULL));
-        cull.add(intSlider(eb, "剔除深度", 1, 5, CoolConfig.CULLING_DEPTH));
-        cull.add(doubleField(eb, "随机剔除率", 0, 1, CoolConfig.REJECTION_RATE));
-        render.addEntry(cull.build());
-
         SubCategoryBuilder trace = eb.startSubCategory(Component.literal("路径追踪"));
         trace.add(intSlider(eb, "追踪线程数", 1, 8, CoolConfig.tracingThreads));
         trace.add(doubleField(eb, "追踪距离", 1, 16, CoolConfig.traceDistance));
@@ -117,23 +111,9 @@ public final class ClothConfigScreenFactory {
         item.addEntry(bool(eb, "物品实体Tick优化", CoolConfig.optimizeItems));
 
         ConfigCategory mem = builder.getOrCreateCategory(Component.literal("内存优化"));
-        mem.addEntry(intSlider(eb, "清理间隔(秒)", 60, 3600, CoolConfig.MEMORY_CLEAN_INTERVAL));
-        mem.addEntry(bool(eb, "GC触发", CoolConfig.ENABLE_GC));
         mem.addEntry(bool(eb, "内存泄漏修复_AE2WTLibCreativeTabLeakFix", CoolConfig.MemoryLeakFix_AE2WTLibCreativeTabLeakFix));
 
         mem.addEntry(bool(eb, "内存泄漏修复_ScreenshotByteBufferLeakFix", CoolConfig.MemoryLeakFix_ScreenshotByteBufferLeakFix));
-        ConfigCategory chunk = builder.getOrCreateCategory(Component.literal("区块优化"));
-        chunk.addEntry(bool(eb, "优化群系生成", CoolConfig.OPTIMIZE_BIOME_GENERATION));
-        chunk.addEntry(bool(eb, "主动卸载区块-仅低性能机开启", CoolConfig.aggressiveChunkUnloading));
-        chunk.addEntry(intSlider(eb, "区块卸载延迟(秒)", 4, 64, CoolConfig.chunkUnloadDelay));
-        chunk.addEntry(bool(eb, "是否启用CTU(启用后请勿在启动时关闭)", CoolConfig.CTU));
-        chunk.addEntry(intSlider(eb, "线程数", 2, 128, CoolConfig.CHUNKTHREADS));
-        chunk.addEntry(intSlider(eb, "IO线程数", 2, 256, CoolConfig.CHUNKIO_THREADS));
-        chunk.addEntry(intSlider(eb, "CPU最大队列数", 3072, 8192, CoolConfig.CPU_QUEUE));
-        chunk.addEntry(intSlider(eb, "IO最大队列数", 1536, 8192, CoolConfig.IO_QUEUE));
-        chunk.addEntry(bool(eb, "区块优化-IO", CoolConfig.CHUNK_REDIRECT_IO));
-        chunk.addEntry(bool(eb, "区块优化-LIGHT", CoolConfig.CHUNk_REDIRECT_LIGHTING));
-        ConfigCategory async = builder.getOrCreateCategory(Component.literal("异步优化"));
         ConfigCategory debug = builder.getOrCreateCategory(Component.literal("调试"));
         debug.addEntry(bool(eb, "调试日志", CoolConfig.DEBUG_LOGGING));
 

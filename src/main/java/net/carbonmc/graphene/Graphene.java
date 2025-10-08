@@ -1,12 +1,9 @@
 package net.carbonmc.graphene;
 
 import com.google.common.collect.Queues;
-import net.carbonmc.graphene.async.chunk.ChunkPool;
 import net.carbonmc.graphene.client.GrapheneClient;
 import net.carbonmc.graphene.config.CoolConfig;
 import net.carbonmc.graphene.gl.CleanerRunnable;
-import net.carbonmc.graphene.optimization.chunk.AES;
-import net.carbonmc.graphene.optimization.chunk.RE;
 import net.carbonmc.graphene.command.KillMobsCommand;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraftforge.api.distmarker.Dist;
@@ -41,18 +38,11 @@ public class Graphene {
 	public static final Logger LOGGER = LogManager.getLogger();
 	public static final String MODID = "graphene";
 	public static final String VERSION = "1.7.6";
-	public static volatile boolean OpenC = false;
 	private ExecutorService executorService;
 	private static final ConcurrentLinkedQueue<CleanerRunnable> PENDING
 			= Queues.newConcurrentLinkedQueue();
 
 	private static final Cleaner CLEANER = Cleaner.create();
-	public static final ChunkPool CKU = new ChunkPool();
-	public static final com.github.benmanes.caffeine.cache.Cache<ChunkPos,int[]> CHUNK_CACHE =
-			com.github.benmanes.caffeine.cache.Caffeine.newBuilder()
-					.maximumSize(1024)
-					.expireAfterAccess(5, TimeUnit.MINUTES)
-					.build();
 	public Graphene() {
 		var modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		var forgeEventBus = MinecraftForge.EVENT_BUS;
@@ -61,7 +51,6 @@ public class Graphene {
 		modEventBus.addListener(this::setup);
 		MixinBootstrap.init();
 		modEventBus.addListener(this::commonSetup);
-		MinecraftForge.EVENT_BUS.addListener(this::onServerStarted);
 		MinecraftForge.EVENT_BUS.addListener(this::onServerStopping);
 		if (FMLEnvironment.dist == Dist.CLIENT) {
 		MinecraftForge.EVENT_BUS.addListener((TickEvent.ClientTickEvent evt) -> {
@@ -80,17 +69,10 @@ public class Graphene {
 		);
 	}
 	private void commonSetup(FMLCommonSetupEvent event) {
-		CKU.a();
 		int processors = Runtime.getRuntime().availableProcessors();
 		executorService = Executors.newWorkStealingPool(Math.max(2, processors / 2));
 		LOGGER.info("Registered async executor for Optimized Abs with {} threads",
 				((java.util.concurrent.ForkJoinPool) executorService).getParallelism());
-	}
-
-	private void onServerStarted(ServerStartedEvent event) {
-		CHUNK_CACHE.invalidateAll();
-		CKU.v();
-		OpenC = true;
 	}
 
 	private void onEndClientTick() {
@@ -102,12 +84,6 @@ public class Graphene {
 	}
 	private void onServerStopping(ServerStoppingEvent event) {
 		LOGGER.info("Shutting down Graphene systems...");
-		OpenC = false;
-		if (CKU != null && !CKU.isShuttingDown()) {
-			CKU.shutdownGracefully();
-		}
-		RE.shutdown();
-		AES.cleanupSharedExecutors();
 		if (executorService != null && !executorService.isShutdown()) {
 			try {
 				executorService.shutdown();
@@ -122,15 +98,7 @@ public class Graphene {
 				Thread.currentThread().interrupt();
 			}
 		}
-		if (CKU != null) {
-			try {
-				CKU.awaitShutdown();
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-			}
-		}
 
-		CHUNK_CACHE.invalidateAll();
 		LOGGER.info("Graphene shutdown complete");
 	}
 
