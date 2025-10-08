@@ -9,7 +9,6 @@
     "other.DFUKILLER",
     "other.MixinBoat",
     "other.MixinJigsawBlockEntity",
-    "other.MixinServerLevel",
     "other.MixinStructureTemplate",
     "stack.InventoryMixin",
     "stack.ItemEntityMixin",
