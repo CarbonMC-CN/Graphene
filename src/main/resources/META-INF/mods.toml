@@ -4,11 +4,10 @@ license = "MIT"
 
 [[mods]]
 modId = "graphene"
-version = "1.6.0"
+version = "1.7.6"
 displayName = "Graphene"
 authors = "CarbonMC, ZCRAFT"
-logo = "logo.png"
-
+logoFile = "assets/logo.png"
 description = '''One of the best optimization mods'''
 
 [[dependencies.graphene]]
@@ -20,7 +19,7 @@ side = "BOTH"
 
 [[dependencies.graphene]]
 modId = "cloth_config"
-mandatory = false
+mandatory = true
 versionRange="0.0.1"
 ordering = "NONE"
 side = "CLIENT"

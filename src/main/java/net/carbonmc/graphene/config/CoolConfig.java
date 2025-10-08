@@ -2,8 +2,6 @@
 package net.carbonmc.graphene.config;
 
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.config.ModConfig;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -25,21 +23,13 @@ public class CoolConfig {
     public static final ForgeConfigSpec.DoubleValue FIXED_TIMESTEP_INTERVAL;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> LOD_PARTICLE_WHITELIST;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> LOD_PARTICLE_BLACKLIST;
-    //一些啸东西
     public static final ForgeConfigSpec.BooleanValue fpsoo;
-    //光照
     public static final ForgeConfigSpec.BooleanValue ENABLE_FIXED_LIGHT;
-
-//村民
-    public static final ForgeConfigSpec.BooleanValue VILLAGER_MOVE_OPTIMIZE;
-    //yellow d/o（r）g/e的啸东西
     public static final ForgeConfigSpec.BooleanValue enableReflex;
     public static final ForgeConfigSpec.LongValue   reflexOffsetNs;
     public static final ForgeConfigSpec.BooleanValue reflexDebug;
     public static final ForgeConfigSpec.IntValue MAX_FPS;
-    //
     public static final ForgeConfigSpec.BooleanValue skipOutlineWhenNoGlowing;
-    //minecraft高版本优化内容移植
     public static final ForgeConfigSpec.BooleanValue FIX_PEARL_LEAK;
     public static final ForgeConfigSpec.BooleanValue FIX_PROJECTILE_LERP;
     // ==================== 渲染优化 | Rendering Optimization ====================
@@ -47,15 +37,10 @@ public class CoolConfig {
     public static final ForgeConfigSpec.BooleanValue ENABLEDCULL;
     public static final ForgeConfigSpec.IntValue CULLING_DEPTH;
     public static final ForgeConfigSpec.DoubleValue REJECTION_RATE;
-    public static final ForgeConfigSpec.BooleanValue ULTRA_CULLING;
-    public static final ForgeConfigSpec.IntValue ULTRA_DEPTH;
-    public static final ForgeConfigSpec.DoubleValue ULTRA_BACKFACE;
-    public static final ForgeConfigSpec.BooleanValue ADVANCED_CULLING;
     public static final ForgeConfigSpec.BooleanValue REDUCE_FPS_WHEN_INACTIVE;
     public static final ForgeConfigSpec.IntValue INACTIVE_FPS_LIMIT;
     public static final ForgeConfigSpec.BooleanValue REDUCE_RENDER_DISTANCE_WHEN_INACTIVE;
     public static final ForgeConfigSpec.IntValue INACTIVE_RENDER_DISTANCE;
-    public static ForgeConfigSpec.BooleanValue useAsyncTracing;
     public static ForgeConfigSpec.IntValue tracingThreads;
     public static ForgeConfigSpec.DoubleValue traceDistance;
     public static ForgeConfigSpec.DoubleValue fallbackDistance;
@@ -93,34 +78,43 @@ public class CoolConfig {
     // ==================== 内存优化 | Memory Optimization ====================
     public static final ForgeConfigSpec.IntValue MEMORY_CLEAN_INTERVAL;
     public static final ForgeConfigSpec.BooleanValue ENABLE_GC;
-
-
+    public static final ForgeConfigSpec.BooleanValue MemoryLeakFix_AE2WTLibCreativeTabLeakFix;
+    public static final ForgeConfigSpec.BooleanValue MemoryLeakFix_ScreenshotByteBufferLeakFix;
     // ==================== 区块优化 | Chunk Optimization ====================
     public static ForgeConfigSpec.BooleanValue aggressiveChunkUnloading;
-    public static ForgeConfigSpec.BooleanValue XtackChunk;
-    public static ForgeConfigSpec.BooleanValue XtackChunk_BETA;
-    public static final ForgeConfigSpec.BooleanValue FAST_CHUNK_ENTITY;
+    public static ForgeConfigSpec.BooleanValue OPTIMIZE_BIOME_GENERATION;
     public static ForgeConfigSpec.IntValue chunkUnloadDelay;
+    public static final ForgeConfigSpec.BooleanValue CTU;
+    public static final ForgeConfigSpec.IntValue CHUNKTHREADS;
+    public static final ForgeConfigSpec.IntValue CHUNKIO_THREADS;
+    public static final ForgeConfigSpec.BooleanValue CHUNK_REDIRECT_IO;
+    public static final ForgeConfigSpec.BooleanValue CHUNk_REDIRECT_LIGHTING;
+    public static final ForgeConfigSpec.IntValue CPU_QUEUE;
+    public static final ForgeConfigSpec.IntValue IO_QUEUE;
 
-    // ==================== 异步优化 | Async Optimization ====================
-    public static final ForgeConfigSpec.BooleanValue ASYNC_PARTICLES;
-    public static final ForgeConfigSpec.IntValue MAX_ASYNC_OPERATIONS_PER_TICK;
-    public static final ForgeConfigSpec.BooleanValue DISABLE_ASYNC_ON_ERROR;
-    public static final ForgeConfigSpec.IntValue ASYNC_EVENT_TIMEOUT;
-    public static final ForgeConfigSpec.BooleanValue WAIT_FOR_ASYNC_EVENTS;
-    public static ForgeConfigSpec.IntValue maxCPUPro;
-    public static ForgeConfigSpec.IntValue maxthreads;
-
-    // ==================== 事件系统 | Event System ====================
-    public static ForgeConfigSpec.BooleanValue FEATURE_ENABLED;
-    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> ASYNC_EVENT_CLASS_BLACKLIST;
-    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> ASYNC_EVENT_MOD_BLACKLIST;
-    public static final ForgeConfigSpec.BooleanValue STRICT_CLASS_CHECKING;
-
-    // ==================== 调试选项 | Debug Options ====================
     public static final ForgeConfigSpec.BooleanValue DEBUG_LOGGING;
-
+    // ==================== NoLog项 | NoLog Options ====================
+    public static ForgeConfigSpec.BooleanValue NoOpenGLError;
     static {
+        BUILDER.push("减少不必要的日志 | NoLog");
+        NoOpenGLError = BUILDER
+                .comment("取消OpenGL错误日志")
+                .define("disable opengl error log", true);
+        BUILDER.pop();
+        /* BUILDER.push("物品缝合优化 | Item Stitching Fix");
+
+       ITEM_STITCHING_METHOD = BUILDER
+                .comment("物品缝合修复算法",
+                        "VANILLA: 原版",
+                        "UNLERP: 反lerp UV",
+                        "OUTLINE: 轮廓模式",
+                        "PIXEL: 像素级精度",
+                        "FULLQUAD: All;UNLERP/OUTLINE/PIXEL模式可能导致部分物品变为黑紫纹理，但其中PIXEL效果最好")
+                .defineEnum("itemStitchingMethod", ItemVFX.VANILLA);
+
+        BUILDER.pop();*/
+        BUILDER.push("Math");
+        BUILDER.pop();
         BUILDER.push("Light");
         ENABLE_FIXED_LIGHT = BUILDER
                 .comment("光照优化")
@@ -132,7 +126,7 @@ public class CoolConfig {
         BUILDER.push("Reflex");
         enableReflex = BUILDER
                 .comment("启用类似 NVIDIA Reflex 的动态低延迟调度")
-                .define("enableReflex", false);
+                .define("enableReflex", true);
         reflexOffsetNs = BUILDER
                 .comment("Reflex 微调等待时间（纳秒）。",
                         "GPU 吃不满就加正数；队列堆积就加负数。")
@@ -168,7 +162,7 @@ public class CoolConfig {
         ENABLE_FIXED_TIMESTEP = BUILDER.comment(
                         "启用固定时间步长",
                         "Enable fixed timestep for particle physics")
-                .define("enableFixedTimestep", true);
+                .define("enableFixedTimestep", false);
 
         FIXED_TIMESTEP_INTERVAL = BUILDER.comment(
                         "固定时间步长间隔 (秒)",
@@ -240,37 +234,13 @@ public class CoolConfig {
                 .defineInRange("cullingDepth", 5, 1, 5);
         REJECTION_RATE = BUILDER.comment(
                         "随机剔除率 (0.0-1.0)，防止可见的剔除模式",
-                        "Random rejection rate (0.0-1.0), Prevents visible culling patterns")
+                        "FastRandom rejection rate (0.0-1.0), Prevents visible culling patterns")
                 .defineInRange("rejectionRate", 0.65, 0.0, 1.0);
 
-        // 超激进剔除
-        BUILDER.push("超激进剔除 | Ultra Culling");
-        ULTRA_CULLING = BUILDER.comment(
-                        "启用超激进剔除（对所有方块/实体生效）",
-                        "Enable ultra-aggressive culling (affects all blocks/entities)")
-                .define("ultraCulling", true);
-        ULTRA_DEPTH = BUILDER.comment(
-                        "剔除深度 (1-4)，值越大剔除越激进但可能出现bug",
-                        "Culling depth (1-4), Higher values = more aggressive culling but may cause bugs")
-                .defineInRange("ultraDepth", 5, 1, 4);
-        ULTRA_BACKFACE = BUILDER.comment(
-                        "仅剔除背向玩家的面（防止正面消失），值范围0.0-1.0",
-                        "Only cull backfaces (prevent front-face disappearance), value range 0.0-1.0")
-                .defineInRange("ultraBackfaceOnly", 0.95, 0.0, 1.0);  // 使用 defineInRange 并指定范围
-        BUILDER.pop(); // 超激进剔除
 
-        ADVANCED_CULLING = BUILDER.comment(
-                        "使用高级剔除算法，更精确但稍慢",
-                        "Use advanced culling algorithm, More precise but slightly slower")
-                .define("advancedCulling", true);
-        BUILDER.pop(); // 高级剔除
 
         // 异步路径追踪
         BUILDER.push("路径追踪 | Path Tracing");
-        useAsyncTracing = BUILDER.comment(
-                        "启用异步路径追踪进行剔除",
-                        "Enable async path tracing for culling")
-                .define("asyncTracing", true);
         tracingThreads = BUILDER.comment(
                         "路径追踪线程数 (1-8)",
                         "Number of threads for path tracing (1-8)")
@@ -335,9 +305,7 @@ public class CoolConfig {
                         "启用实体tick优化",
                         "Enable entity tick optimization")
                 .define("optimizeEntities", true);
-        VILLAGER_MOVE_OPTIMIZE = BUILDER
-                .comment("优化村民在1x1空间内的AI")
-                .define("villagerMoveOptimize", true);
+
         horizontalRange = BUILDER.comment(
                         "水平检测范围(方块)",
                         "Horizontal detection range (blocks)")
@@ -448,22 +416,22 @@ public class CoolConfig {
                         "清理时触发垃圾回收",
                         "Trigger garbage collection during cleanup")
                 .define("enableGC", false);
-
+        MemoryLeakFix_AE2WTLibCreativeTabLeakFix = BUILDER.comment(
+                        "内存泄漏修复_AE2WTLibCreativeTabLeakFix",
+                        "MemoryLeakFix_AE2WTLib")
+                .define("enablememoryleakfixae2", true);
+       MemoryLeakFix_ScreenshotByteBufferLeakFix = BUILDER.comment(
+                        "内存泄漏修复_ScreenshotByteBufferLeakFix",
+                        "MemoryLeakFix_ScreenshotByteBufferLeakFix")
+                .define("enablememoryleakfixScreenshotByteBufferLeakFix", true);
         BUILDER.pop(); // 内存优化
 
         // ==================== 区块优化设置 | Chunk Optimization Settings ====================
         BUILDER.comment("区块优化 | Chunk Optimization").push("chunk_optimization");
-        XtackChunk = BUILDER.comment(
-                        "区块加载速度优化",
-                        "Chunk Optimize")
-                .define("加速区块加载", true);
-        XtackChunk_BETA = BUILDER.comment(
-                        "区块优化-Beta",
-                        "Chunk Optimize Beta")
-                .define("Chunk Optimize Beta", false);
-        FAST_CHUNK_ENTITY = BUILDER
-                .comment("快速区块-实体加载优化")
-                .define("快速区块-实体加载优化延迟加载", true);
+        OPTIMIZE_BIOME_GENERATION = BUILDER.comment(
+                        "优化群系生成",
+                        "OPTIMIZE_BIOME_GENERATION")
+                .define("aggressiveChunkUnloading", false);
         aggressiveChunkUnloading = BUILDER.comment(
                         "主动卸载非活动区块",
                         "Aggressively unload inactive chunks")
@@ -472,79 +440,16 @@ public class CoolConfig {
                         "区块卸载延迟 (秒)",
                         "Chunk unload delay (seconds)")
                 .defineInRange("chunkUnloadDelay", 60, 10, 600);
+        CTU = BUILDER
+                .comment("是否启用以下功能-请勿在已经启动游戏并且开启此功能时关闭否则会导致意想不到的后果")
+                .define("Chunk++", true);
+        CHUNKTHREADS = BUILDER.comment("线程数").defineInRange("chunkcputhreads", 2, 2, 128);
+        CHUNKIO_THREADS = BUILDER.comment("IO线程").defineInRange("chunkioThreads", 4, 2, 256);
+        CHUNK_REDIRECT_IO = BUILDER.comment("区块优化-ct").define("chunkoptimizeIo", true);
+        CPU_QUEUE = BUILDER.comment("CPU队列最大限制").defineInRange("cpu_queue", 3072, 1536, 8192);
+        IO_QUEUE = BUILDER.comment("IO队列最大限制").defineInRange("io_queue", 1536, 1536, 8192);
+        CHUNk_REDIRECT_LIGHTING = BUILDER.comment("区块优化-l-Beta").define("chunk-l-beta", true);
         BUILDER.pop(); // 区块优化
-
-        // ==================== 异步优化设置 | Async Optimization Settings ====================
-        BUILDER.comment("异步优化 | Async Optimization").push("async_optimization");
-
-        ASYNC_PARTICLES = BUILDER.comment(
-                        "启用异步粒子处理",
-                        "Enable asynchronous particle processing")
-                .define("asyncParticles", true);
-
-        MAX_ASYNC_OPERATIONS_PER_TICK = BUILDER.comment(
-                        "每tick最大异步操作数",
-                        "Max async operations processed per tick")
-                .defineInRange("maxAsyncOpsPerTick", 1000, 100, 10000);
-
-        DISABLE_ASYNC_ON_ERROR = BUILDER.comment(
-                        "出错后禁用该事件类型的异步处理",
-                        "Disable async for event type after errors")
-                .define("disableAsyncOnError", true);
-
-        ASYNC_EVENT_TIMEOUT = BUILDER.comment(
-                        "异步事件超时时间(秒)",
-                        "Timeout in seconds for async events")
-                .defineInRange("asyncEventTimeout", 2, 1, 10);
-
-        WAIT_FOR_ASYNC_EVENTS = BUILDER.comment(
-                        "等待异步事件完成",
-                        "Wait for async events to complete")
-                .define("waitForAsyncEvents", false);
-
-        BUILDER.push("线程配置 | Thread Configuration");
-        maxCPUPro = BUILDER.comment(
-                        "异步系统最大CPU核心数",
-                        "Max CPU Cores for async system")
-                .defineInRange("maxCPUPro", 8, 2, 128);
-        maxthreads = BUILDER.comment(
-                        "最大线程数",
-                        "Max Threads for general async operations")
-                .defineInRange("maxthreads", 8, 2, 256);
-        BUILDER.pop(); // 线程配置
-
-        BUILDER.pop(); // 异步优化
-
-        // ==================== 事件系统设置 | Event System Settings ====================
-        BUILDER.comment("事件系统 | Event System").push("event_system");
-
-        FEATURE_ENABLED = BUILDER.comment(
-                        "启用高性能异步事件功能",
-                        "Enable high-performance async event system")
-                .define("featureEnabled", true);
-
-        ASYNC_EVENT_CLASS_BLACKLIST = BUILDER.comment(
-                        "不应异步处理的事件类列表（支持通配符）",
-                        "Event classes that should NOT be processed asynchronously (supports wildcards)")
-                .defineList("classBlacklist",
-                        List.of(
-                                "net.minecraftforge.event.TickEvent",
-                                "net.minecraftforge.event.level.LevelTickEvent",
-                                "net.minecraftforge.event.entity.living.*"
-                        ),
-                        o -> o instanceof String);
-
-        ASYNC_EVENT_MOD_BLACKLIST = BUILDER.comment(
-                        "不应异步处理的模组ID列表",
-                        "Mod IDs whose events should NOT be processed asynchronously")
-                .defineList("modBlacklist", Collections.emptyList(), o -> o instanceof String);
-
-        STRICT_CLASS_CHECKING = BUILDER.comment(
-                        "启用严格的类存在检查（推荐开启以确保稳定性）",
-                        "Enable strict class existence checking (disable for stability)")
-                .define("strictClassChecking", true);
-
-        BUILDER.pop(); // 事件系统
 
         // ==================== 调试设置 | Debug Settings ====================
         BUILDER.comment("调试选项 | Debug Options").push("debug");
@@ -564,17 +469,6 @@ public class CoolConfig {
         return CULLING_DEPTH.get();
     }
 
-    public static boolean useUltraCulling() {
-        return ULTRA_CULLING.get();
-    }
-
-    public static int ultraCullingDepth() {
-        return ULTRA_DEPTH.get();
-    }
-
-    public static double ultraBackfaceThreshold() {
-        return ULTRA_BACKFACE.get();
-    }
 
     public static float getRejectionRate() {
         return REJECTION_RATE.get().floatValue();
@@ -584,51 +478,13 @@ public class CoolConfig {
         return OPTIMIZE_MANGROVE.get();
     }
 
-    public static boolean useAsyncTracing() {
-        return useAsyncTracing.get();
-    }
 
     public static double getTraceDistance() {
         return traceDistance.get();
     }
 
-    public static boolean useAdvancedCulling() {
-        return ADVANCED_CULLING.get();
-    }
 
-    public static Set<String> getAsyncEventClassBlacklist() {
-        return new HashSet<>(ASYNC_EVENT_CLASS_BLACKLIST.get());
-    }
-
-    public static boolean isEnabled() {
-        return FEATURE_ENABLED.get();
-    }
-
-    public static Set<String> getAsyncEventModBlacklist() {
-        return new HashSet<>(ASYNC_EVENT_MOD_BLACKLIST.get());
-    }
     public enum RenderMode {
-        SIMPLE, VANILLA, SEMI_COMPLEX
-    }
-    public static boolean isStrictClassCheckingEnabled() {
-        return STRICT_CLASS_CHECKING.get();
-    }
-
-    public static void resetToDefault() {
-        ForgeConfigSpec newSpec = new ForgeConfigSpec.Builder()
-                .configure(builder -> {
-                    new CoolConfig();
-                    return builder.build();
-                }).getRight();
-        SPEC = newSpec;
-        newSpec.save();
-    }
-
-    public static void register() {
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, SPEC, "graphene.toml");
-    }
-
-    public static void onChange(Consumer<Void> listener) {
-        changeListener = listener;
+        SIMPLE, VANILLA
     }
 }

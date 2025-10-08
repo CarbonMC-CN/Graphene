@@ -1,6 +1,6 @@
 package net.carbonmc.graphene.mixin.client.lang;
 
-import net.carbonmc.graphene.flang;
+import net.carbonmc.graphene.lang.flang;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Renderable;

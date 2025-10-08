@@ -1,7 +1,7 @@
 // MinecraftMixin.java
 package net.carbonmc.graphene.mixin.client.fps;
 
-import net.carbonmc.graphene.FrameRateController;
+import net.carbonmc.graphene.fps.FrameRateController;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;

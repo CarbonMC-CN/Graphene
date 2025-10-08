@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.carbonmc.graphene.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "MemoryLeakFix.client.AE2WTLibCreativeTabLeakFix"
+  ],
+  "injectors": {
+    "defaultRequire": 0,
+    "maxShiftBy": 5
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}

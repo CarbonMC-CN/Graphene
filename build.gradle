@@ -87,12 +87,14 @@ minecraft {
 }
 
 mixin {
-    add sourceSets.main, "${mod_id}.refmap.json"
-    config "${mod_id}.mixins.json"
-    config 'graphene.compat.mixins.json'
-   // config 'graphene.zc.mixins.json'
+    add sourceSets.main, "graphene.refmap.json"
+    config "graphene.mixins.json"
+    config 'graphene.compat.dh.mixins.json'
+    config 'graphene.mixins.ae2wtlib.json'
     debug.verbose = true
     debug.export = true
+    dumpTargetOnFailure = true
+    quiet = false
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
@@ -101,6 +103,7 @@ dependencies {
     minecraft 'net.minecraftforge:forge:1.20.1-47.4.0'
     implementation 'com.esotericsoftware:kryo:5.6.2'
     implementation 'org.apache.commons:commons-math3:3.6.1'
+    compileOnly fg.deobf("curse.maven:starlight-forge-526854:4631193")
     implementation 'com.google.guava:guava:31.1-jre'
     implementation 'com.github.luben:zstd-jni:1.5.5-5'
     implementation 'org.joml:joml:1.10.5'
@@ -118,6 +121,7 @@ dependencies {
     implementation files('lib/1.jar')
     implementation 'net.jpountz.lz4:lz4:1.3.0'
     implementation files('lib/cloth.jar')
+    implementation files('lib/ae2wtlib.jar')
     implementation 'org.ow2.asm:asm-tree:9.4'
     compileOnly 'org.projectlombok:lombok:1.18.28'
     annotationProcessor 'org.projectlombok:lombok:1.18.28'
@@ -126,8 +130,30 @@ dependencies {
         jarJar.ranged(it, "[5.4.0,6.0.0)")
     }
 }
-
+tasks.register('copyRefmap', Copy) {
+    from layout.buildDirectory.file("tmp/compileJava/compileJava-refmap.json")
+    into layout.buildDirectory.dir("resources/main")
+    rename 'compileJava-refmap.json', "${mod_id}.refmap.json"
+    dependsOn tasks.named('compileJava')
+}
+tasks.named('compileJava') {
+    build.dependsOn verifyBuild
+    doLast {
+        println "=== 编译后检查 ==="
+        def refmapFile = file("${buildDir}/resources/main/${mod_id}.refmap.json")
+        if (refmapFile.exists()) {
+            println "✓ Refmap 文件已生成: ${refmapFile.path}"
+            println "  文件大小: ${refmapFile.length()} bytes"
+        } else {
+            println "⚠ Refmap 文件未找到，可能的位置:"
+            fileTree("${buildDir}").matching { include "**/*.refmap.json" }.each { f ->
+                println "  - ${f.path}"
+            }
+        }
+    }
+}
 tasks.named('processResources', ProcessResources).configure {
+    dependsOn tasks.named('copyRefmap')
     var replaceProperties = [minecraft_version   : minecraft_version, minecraft_version_range: minecraft_version_range,
                              forge_version       : forge_version, forge_version_range: forge_version_range,
                              loader_version_range: loader_version_range,
@@ -135,7 +161,7 @@ tasks.named('processResources', ProcessResources).configure {
                              mod_authors         : mod_authors, mod_description: mod_description,]
 
     inputs.properties replaceProperties
-
+   // finalizedBy tasks.named('copyRefmap')
     filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
         expand replaceProperties + [project: project]
     }
@@ -149,7 +175,9 @@ tasks.named('jar', Jar).configure {
                     "Implementation-Title"    : project.name,
                     "Implementation-Version"  : project.jar.archiveVersion,
                     "Implementation-Vendor"   : mod_authors,
-                    "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")])
+                    "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                    "MixinConfigs": "${mod_id}.mixins.json,${mod_id}.compat.dh.mixins.json,${mod_id}.mixins.ae2wtlib.json"
+        ])
     }
     from {
         configurations.runtimeClasspath.collect {
@@ -159,15 +187,23 @@ tasks.named('jar', Jar).configure {
 
     exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
     duplicatesStrategy = 'exclude'
+    from sourceSets.main.output
+    include "**/${mod_id}.refmap.json"
+    include "**/${mod_id}.mixins.json"
+    include "**/${mod_id}.compat.dh.mixins.json"
+    include "**/${mod_id}.mixins.ae2wtlib.json"
     finalizedBy 'reobfJar'
+
 }
 
 tasks.withType(JavaCompile).configureEach {
-    options.release = 17 // 确保编译为 Java 17 字节码
+    options.release = 17
     options.compilerArgs << "-Xlint:deprecation" << "-Xlint:unchecked"
     options.encoding = 'UTF-8'
 }
-
+tasks.named('classes') {
+    dependsOn tasks.named('copyRefmap')
+}
 shadowJar {
     mergeServiceFiles()
     exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
@@ -175,6 +211,6 @@ shadowJar {
 }
 jar {
     manifest.attributes([
-            "MixinConfigs": "graphene.mixins.json,graphene.mixins.json,graphene.compat.mixins.json"
+            "MixinConfigs": "graphene.refmap.json,graphene.mixins.json,graphene.compat.dh.mixins.json"
     ])
 }

@@ -1,6 +1,6 @@
 package net.carbonmc.graphene.client;
 
-import net.carbonmc.graphene.AsyncHandler;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -10,7 +10,7 @@ import net.minecraftforge.client.event.RenderNameTagEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 @OnlyIn(Dist.CLIENT)
-@AsyncHandler
+
 public class ItemCountRenderer {
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onNameTagRender(RenderNameTagEvent event) {

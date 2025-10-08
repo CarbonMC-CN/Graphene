@@ -25,10 +25,9 @@ import static org.lwjgl.opengl.GL33.*;
 @Mixin(GameRenderer.class)
 public abstract class ReflexSchedulerMixin {
 
-    // 计时模式常量
     private static final int MODE_DISABLED = 0;
-    private static final int MODE_TIMESTAMP = 1; // 使用 glQueryCounter (GL_ARB_timer_query)
-    private static final int MODE_ELAPSED = 2;   // 使用 GL_TIME_ELAPSED (兼容模式)
+    private static final int MODE_TIMESTAMP = 1;
+    private static final int MODE_ELAPSED = 2;
 
     @Shadow @Final private Minecraft minecraft;
     private static final Logger LOGGER = LogManager.getLogger("Graphene-Reflex");
@@ -46,7 +45,7 @@ public abstract class ReflexSchedulerMixin {
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void reflex$init(Minecraft p_234219_, ItemInHandRenderer p_234220_, ResourceManager p_234221_, RenderBuffers p_234222_, CallbackInfo ci) {
-        // 检测最佳可用计时方式
+
         if (GL.getCapabilities().GL_ARB_timer_query) {
             timingMode = MODE_TIMESTAMP;
             glGenQueries(queryIds);
@@ -67,7 +66,7 @@ public abstract class ReflexSchedulerMixin {
 
         final long cpuNow = System.nanoTime();
 
-        // 1. 获取 GPU 完成时间
+
         long gpuDone = -1;
         switch (timingMode) {
             case MODE_TIMESTAMP:
@@ -80,8 +79,6 @@ public abstract class ReflexSchedulerMixin {
 
         if (gpuDone > 0 && gpuDone < cpuNow) {
             lastGpuDoneNs = gpuDone;
-
-            // 2. 计算并执行等待
             long cpuElapsed = cpuNow - lastGpuDoneNs;
             smoothedDeltaNs = SMOOTH_ALPHA * cpuElapsed + (1.0 - SMOOTH_ALPHA) * smoothedDeltaNs;
 
@@ -93,7 +90,6 @@ public abstract class ReflexSchedulerMixin {
             }
         }
 
-        // 3. 帧率控制
         int maxFps = CoolConfig.MAX_FPS.get();
         if (maxFps > 0 && lastFrameEndNs > 0) {
             long targetFrameTime = 1_000_000_000L / maxFps;
@@ -150,8 +146,6 @@ public abstract class ReflexSchedulerMixin {
 
         int[] timeNs = {0};
         glGetQueryObjectiv(queryIds[prev], GL_QUERY_RESULT, timeNs);
-
-        // 使用上一帧结束时间作为基准
         return (lastFrameEndNs > 0) ? lastFrameEndNs + timeNs[0] * 1_000_000L : -1;
     }
 
@@ -159,12 +153,10 @@ public abstract class ReflexSchedulerMixin {
         long endTime = startTime + waitNs;
         long currentTime;
 
-        // 初始忙等待
         while ((currentTime = System.nanoTime()) < endTime - 100_000L) {
             Thread.onSpinWait();
         }
 
-        // 最后阶段更精确的等待
         while (System.nanoTime() < endTime) {
             try {
                 Thread.sleep(0, 1000);

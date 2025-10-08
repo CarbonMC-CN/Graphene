@@ -1,6 +1,5 @@
 package net.carbonmc.graphene.mixin.client.title;
 
-import net.carbonmc.graphene.AsyncHandler;
 import net.carbonmc.graphene.config.CoolConfig;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
@@ -9,7 +8,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-@AsyncHandler
 @Mixin(Slot.class)
 public abstract class SlotMixin {
 

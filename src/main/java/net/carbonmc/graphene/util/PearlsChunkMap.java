@@ -38,7 +38,9 @@ public final class PearlsChunkMap extends SavedData {
         get(level).map.put(owner, pos);
         level.setChunkForced(pos.x, pos.z, true);
         get(level).setDirty();
-        LOGGER.debug("Pearl forced chunk {} in {}", pos, level.dimension().location());
+        if (CoolConfig.DEBUG_LOGGING.get()) {
+            LOGGER.debug("Pearl forced chunk {} in {}", pos, level.dimension().location());
+        }
     }
 
     public void remove(UUID owner, ServerLevel level) {
@@ -62,7 +64,7 @@ public final class PearlsChunkMap extends SavedData {
     @SubscribeEvent
     public static void onWorldTick(TickEvent.LevelTickEvent evt) {
         if (evt.phase == TickEvent.Phase.END && evt.level instanceof ServerLevel sl) {
-            if (sl.getServer().getTickCount() % 6000 == 0) {   // 5 分钟
+            if (sl.getServer().getTickCount() % 6000 == 0) {
                 get(sl).setDirty();
             }
         }

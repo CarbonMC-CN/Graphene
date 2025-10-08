@@ -3,7 +3,6 @@ package net.carbonmc.graphene.client;
 
 import net.carbonmc.graphene.client.gui.ClothConfigScreenFactory;
 import net.carbonmc.graphene.client.gui.GUIEN;
-import net.carbonmc.graphene.engine.cull.AsyncTracer;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -15,11 +14,6 @@ import net.minecraftforge.fml.ModLoadingContext;
 public class GrapheneClient {
     public static void init() {
         MinecraftForge.EVENT_BUS.register(ItemCountRenderer.class);
-
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            //       RenderOptimizer.shutdown();
-            AsyncTracer.shutdown();
-        }));
         String language = Minecraft.getInstance().options.languageCode;
         if ("zh_cn".equals(language)) {
             ModLoadingContext.get().registerExtensionPoint(

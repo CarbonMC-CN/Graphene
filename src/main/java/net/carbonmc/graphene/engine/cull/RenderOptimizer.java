@@ -51,7 +51,7 @@ public final class RenderOptimizer {
     }
 
     public static boolean shouldSkipEntity(Entity entity) {
-        if (!CoolConfig.useAsyncTracing.get()) return false;
+
         if (FALLBACK_MODE.get()) return fallbackEntityCheck(entity);
 
         int entityId = entity.getId();
@@ -75,7 +75,6 @@ public final class RenderOptimizer {
     }
 
     public static boolean shouldCullBlockFace(BlockGetter level, BlockPos pos, Direction face) {
-        if (!CoolConfig.useAsyncTracing.get()) return false;
         if (FALLBACK_MODE.get()) {
             return LeafOptiEngine.checkSimpleConnection(level, pos.relative(face), face);
         }

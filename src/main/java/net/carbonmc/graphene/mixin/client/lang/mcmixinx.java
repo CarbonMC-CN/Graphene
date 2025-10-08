@@ -1,7 +1,7 @@
 package net.carbonmc.graphene.mixin.client.lang;
 
-import net.carbonmc.graphene.AsyncHandler;
-import net.carbonmc.graphene.flang;
+
+import net.carbonmc.graphene.lang.flang;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.LanguageSelectScreen;
 import net.minecraft.client.gui.screens.Overlay;
@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
-@AsyncHandler
+
 @OnlyIn(Dist.CLIENT)
 @Mixin(Minecraft.class)
 public abstract class mcmixinx {

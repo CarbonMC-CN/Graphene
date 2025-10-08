@@ -5,9 +5,10 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "graphene.refmap.json",
   "mixins": [
+
     "MOFRP.EnderPearlMixin",
     "other.DFUKILLER",
-    "other.EventListenerTransformerMixin",
+    "other.MixinASMEventHandler",
     "other.MixinBoat",
     "other.MixinJigsawBlockEntity",
     "other.MixinServerLevel",
@@ -18,25 +19,22 @@
     "stack.fix.BucketItem",
     "stack.fix.BucketItemAccessor",
     "tickstop.EntityTypeMixin",
-    "tickstop.LevelMixin",
-    "villager.VillagerMoveOptimizationMixin",
-    "chunk.ChunkGeneratorMixin",
-    "chunk.ChunkSectionBiomeMixin",
-    "chunk.LevelChunkSectionOptimizedMixin",
-    "chunk.ChunkEntityLoadingMixin"
+    "tickstop.LevelMixin"
   ],
   "server": [
     "server.MixinWorldGenRegion"
   ],
   "client": [
+    "MemoryLeakFix.client.ScreenshotByteBufferLeakFixMixin",
     "client.chest.OptimizedChestBlockMixin",
     "client.chest.OptimizedChestRenderer",
     "client.chest.OptimizedEnderChestMixin",
     "client.culling.EntityRendererMixin",
     "client.culling.LeafRenderMixin",
-    "client.culling.LevelRendererMixin",
     "client.fps.MinecraftMixin",
     "client.fps.OptionsMixin",
+    "client.gl.FramebufferMixin",
+    "client.gl.NoError",
     "client.lang.mcmixinx",
     "client.lang.uimixin",
     "client.light.FastBamboo",
@@ -50,10 +48,13 @@
     "client.renderer.particle.ParticleAccessor",
     "client.renderer.reflex.ReflexSchedulerMixin",
     "client.renderer.skip.GameRendererMixin",
-    "client.renderer.sky.MixinWorldRenderer"
+    "client.renderer.sky.MixinWorldRenderer",
+    "client.button.AbstractWidgetMixin",
+    "client.button.SliderWidgetMixin"
+
   ],
   "injectors": {
-    "defaultRequire": 0,
+    "defaultRequire": 1,
     "maxShiftBy": 5
   },
   "overwrites": {

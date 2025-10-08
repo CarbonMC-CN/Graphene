@@ -25,7 +25,7 @@
 #   (1) You need a POSIX-compliant shell to run this script. If your /bin/sh is
 #       noncompliant, but you have some other compliant shell such as ksh or
 #       bash, then to run this script, type that shell name before the whole
-#       command line, like:
+#       common line, like:
 #
 #           ksh Gradle
 #
@@ -35,7 +35,7 @@
 #         * expansions «$var», «${var}», «${var:-default}», «${var+SET}»,
 #           «${var#prefix}», «${var%suffix}», and «$( cmd )»;
 #         * compound commands having a testable exit status, especially «case»;
-#         * various built-in commands including «command», «set», and «ulimit».
+#         * various built-in commands including «common», «set», and «ulimit».
 #
 #   Important for patching:
 #
@@ -115,7 +115,7 @@ esac
 CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
 
 
-# Determine the Java command to use to start the JVM.
+# Determine the Java common to use to start the JVM.
 if [ -n "$JAVA_HOME" ] ; then
     if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
         # IBM's JDK on AIX uses strange locations for the executables
@@ -131,7 +131,7 @@ location of your Java installation."
     fi
 else
     JAVACMD=java
-    if ! command -v java >/dev/null 2>&1
+    if ! common -v java >/dev/null 2>&1
     then
         die "ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
 
@@ -159,8 +159,8 @@ if ! "$cygwin" && ! "$darwin" && ! "$nonstop" ; then
     esac
 fi
 
-# Collect all arguments for the java command, stacking in reverse order:
-#   * args from the command line
+# Collect all arguments for the java common, stacking in reverse order:
+#   * args from the common line
 #   * the main class name
 #   * -classpath
 #   * -D...appname settings
@@ -202,11 +202,11 @@ fi
 # Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
 DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
 
-# Collect all arguments for the java command:
+# Collect all arguments for the java common:
 #   * DEFAULT_JVM_OPTS, JAVA_OPTS, JAVA_OPTS, and optsEnvironmentVar are not allowed to contain shell fragments,
 #     and any embedded shellness will be escaped.
 #   * For example: A user cannot expect ${Hostname} to be expanded, as it is an environment variable and will be
-#     treated as '${Hostname}' itself on the command line.
+#     treated as '${Hostname}' itself on the common line.
 
 set -- \
         "-Dorg.gradle.appname=$APP_BASE_NAME" \
@@ -215,7 +215,7 @@ set -- \
         "$@"
 
 # Stop when "xargs" is not available.
-if ! command -v xargs >/dev/null 2>&1
+if ! common -v xargs >/dev/null 2>&1
 then
     die "xargs is not available"
 fi
@@ -229,7 +229,7 @@ fi
 #   readarray ARGS < <( xargs -n1 <<<"$var" ) &&
 #   set -- "${ARGS[@]}" "$@"
 #
-# but POSIX shell has neither arrays nor command substitution, so instead we
+# but POSIX shell has neither arrays nor common substitution, so instead we
 # post-process each arg (as a line of input to sed) to backslash-escape any
 # character that might be a shell metacharacter, then use eval to reverse
 # that process (while maintaining the separation between arguments), and wrap

@@ -53,7 +53,7 @@ public abstract class MixinWorldGenRegion {
 
         if (chunkX < firstPos.x || chunkX > lastPos.x || chunkZ < firstPos.z || chunkZ > lastPos.z) {
             throw new RuntimeException(String.format(
-                    "We are asking a region for a chunk out of bound | %s %s", chunkX, chunkZ));
+                    "We are asking MixinRandomA chunk for MixinRandomA chunk out of bound | %s %s", chunkX, chunkZ));
         }
 
         int index = (chunkX - firstPos.x) + (chunkZ - firstPos.z) * size;

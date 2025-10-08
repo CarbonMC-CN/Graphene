@@ -1,9 +1,9 @@
 package net.carbonmc.graphene.mixin.stack;
 
-import net.carbonmc.graphene.AsyncHandler;
 import net.carbonmc.graphene.config.CoolConfig;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -12,10 +12,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static net.carbonmc.graphene.config.CoolConfig.OpenIO;
 
-@AsyncHandler
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin {
     @Shadow public abstract Item getItem();
+
     @Inject(method = "getMaxStackSize", at = @At("HEAD"), cancellable = true)
     private void onGetMaxStackSize(CallbackInfoReturnable<Integer> cir) {
         if (!OpenIO.get()) {
@@ -27,6 +27,7 @@ public abstract class ItemStackMixin {
             cir.setReturnValue(Math.min(configMax, vanillaMax));
         }
     }
+
     @Inject(method = "isStackable", at = @At("HEAD"), cancellable = true)
     private void onIsStackable(CallbackInfoReturnable<Boolean> cir) {
         if (!OpenIO.get()) {

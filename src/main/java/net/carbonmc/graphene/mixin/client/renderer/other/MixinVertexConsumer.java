@@ -1,4 +1,3 @@
-//能看到两位同学联合造势，真的...很（）了
 package net.carbonmc.graphene.mixin.client.renderer.other;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;

@@ -1,6 +1,6 @@
 package net.carbonmc.graphene.mixin.client.fps;
 
-import net.carbonmc.graphene.RenderDistanceController;
+import net.carbonmc.graphene.fps.RenderDistanceController;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraftforge.api.distmarker.Dist;
