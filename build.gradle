@@ -89,7 +89,6 @@ minecraft {
 mixin {
     add sourceSets.main, "graphene.refmap.json"
     config "graphene.mixins.json"
-    config 'graphene.compat.dh.mixins.json'
     config 'graphene.mixins.ae2wtlib.json'
     debug.verbose = true
     debug.export = true
