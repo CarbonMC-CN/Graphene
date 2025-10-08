@@ -1,0 +1,59 @@
+name: Dependency Review
+
+on:
+  pull_request:
+    branches: [master]
+  workflow_dispatch:          # 手动排错入口
+    inputs:
+      debug:
+        description: 'Enable debug log'
+        required: false
+        default: 'false'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  dependency-review:
+    runs-on: ubuntu-latest
+    env:
+      ACTIONS_RUNTIME_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_ACTION_DOWNLOAD_CDN: https://ghproxy.com/https://github.com
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+
+      - name: Cache dependency-snapshot
+        uses: actions/cache@v4
+        with:
+          path: ~/dependency-snapshot
+          key: dep-snapshot-${{ runner.os }}-${{ github.event.pull_request.base.sha }}-${{ github.event.pull_request.head.sha }}
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        with:
+          comment-summary-in-pr: on-failure
+          fail-on-severity: high
+          fail-on-scope: runtime,development,unknown
+          warn-on-unknown-scopes: true
+          log-level: ${{ github.event.inputs.debug == 'true' && 'debug' || 'info' }}
+          deny-licenses: |
+            GPL-1.0-only
+            GPL-1.0-or-later
+            GPL-2.0-only
+            GPL-2.0-or-later
+            GPL-3.0-only
+            GPL-3.0-or-later
+            LGPL-2.0-only
+            LGPL-2.0-or-later
+            LGPL-2.1-only
+            LGPL-2.1-or-later
+            LGPL-3.0-only
+            LGPL-3.0-or-later
+            AGPL-1.0-only
+            AGPL-1.0-or-later
+            AGPL-3.0-only
+            AGPL-3.0-or-later
+          retry-on-snapshot-warnings: true
+          retry-count: 3
