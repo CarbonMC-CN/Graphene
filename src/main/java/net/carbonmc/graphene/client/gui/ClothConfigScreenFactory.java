@@ -33,7 +33,11 @@ public final class ClothConfigScreenFactory {
         SubCategoryBuilder fps = eb.startSubCategory(Component.literal("降低渲染延迟"));
         fps.add(bool(eb, "启用优化", CoolConfig.fpsoo));
         render.addEntry(fps.build());
-
+        SubCategoryBuilder leaf = eb.startSubCategory(Component.literal("树叶优化"));
+        leaf.add(bool(eb, "高级树叶剔除", CoolConfig.useAdvancedLeafCulling));
+        leaf.add(intSlider(eb, "最小树叶连接", 1, 6, CoolConfig.minLeafConnections));
+        leaf.add(bool(eb, "优化红树林", CoolConfig.OPTIMIZE_MANGROVE));
+        render.addEntry(leaf.build());
         SubCategoryBuilder chest = eb.startSubCategory(Component.literal("箱子渲染优化"));
         chest.add(bool(eb, "启用优化", CoolConfig.ENABLE_OPTIMIZATION));
         chest.add(enumOpt(eb, "渲染模式", CoolConfig.RenderMode.class, CoolConfig.RENDER_MODE));
@@ -48,17 +52,6 @@ public final class ClothConfigScreenFactory {
                 -1_000_000L, 1_000_000L, CoolConfig.reflexOffsetNs));
         reflex.addEntry(intSlider(eb, "Reflex 帧率上限", 0, 1000, CoolConfig.MAX_FPS));
 
-        SubCategoryBuilder trace = eb.startSubCategory(Component.literal("路径追踪"));
-        trace.add(intSlider(eb, "追踪线程数", 1, 8, CoolConfig.tracingThreads));
-        trace.add(doubleField(eb, "追踪距离", 1, 16, CoolConfig.traceDistance));
-        trace.add(doubleField(eb, "回退距离", 4, 32, CoolConfig.fallbackDistance));
-        render.addEntry(trace.build());
-
-        SubCategoryBuilder leaf = eb.startSubCategory(Component.literal("树叶优化"));
-        leaf.add(bool(eb, "高级树叶剔除", CoolConfig.useAdvancedLeafCulling));
-        leaf.add(intSlider(eb, "最小树叶连接", 1, 6, CoolConfig.minLeafConnections));
-        leaf.add(bool(eb, "优化红树林", CoolConfig.OPTIMIZE_MANGROVE));
-        render.addEntry(leaf.build());
 
         ConfigCategory particle = builder.getOrCreateCategory(Component.literal("粒子优化"));
         particle.addEntry(bool(eb, "启用粒子优化", CoolConfig.ENABLE_PARTICLE_OPTIMIZATION));
@@ -112,7 +105,6 @@ public final class ClothConfigScreenFactory {
 
         ConfigCategory mem = builder.getOrCreateCategory(Component.literal("内存优化"));
         mem.addEntry(bool(eb, "内存泄漏修复_AE2WTLibCreativeTabLeakFix", CoolConfig.MemoryLeakFix_AE2WTLibCreativeTabLeakFix));
-
         mem.addEntry(bool(eb, "内存泄漏修复_ScreenshotByteBufferLeakFix", CoolConfig.MemoryLeakFix_ScreenshotByteBufferLeakFix));
         ConfigCategory debug = builder.getOrCreateCategory(Component.literal("调试"));
         debug.addEntry(bool(eb, "调试日志", CoolConfig.DEBUG_LOGGING));

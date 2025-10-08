@@ -71,8 +71,6 @@ public class Graphene {
 	private void commonSetup(FMLCommonSetupEvent event) {
 		int processors = Runtime.getRuntime().availableProcessors();
 		executorService = Executors.newWorkStealingPool(Math.max(2, processors / 2));
-		LOGGER.info("Registered async executor for Optimized Abs with {} threads",
-				((java.util.concurrent.ForkJoinPool) executorService).getParallelism());
 	}
 
 	private void onEndClientTick() {

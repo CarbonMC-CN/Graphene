@@ -42,17 +42,17 @@ public final class GUIEN {
         chest.add(bool(eb, "Optimize Trapped Chests", CoolConfig.OPTIMIZE_TRAPPED_CHESTS));
         chest.add(intSlider(eb, "Max Render Distance", 1, 128, CoolConfig.MAX_RENDER_DISTANCE));
         render.addEntry(chest.build());
+        SubCategoryBuilder leaf = eb.startSubCategory(Component.literal("Leaf Optimization"));
+        leaf.add(bool(eb, "Advanced Leaf Culling", CoolConfig.useAdvancedLeafCulling));
+        leaf.add(intSlider(eb, "Min Leaf Connections", 1, 6, CoolConfig.minLeafConnections));
+        leaf.add(bool(eb, "Optimize Mangrove", CoolConfig.OPTIMIZE_MANGROVE));
+        render.addEntry(leaf.build());
 
         ConfigCategory reflex = builder.getOrCreateCategory(Component.literal("Reflex Low Latency"));
         reflex.addEntry(bool(eb, "Enable Reflex", CoolConfig.enableReflex));
         reflex.addEntry(longField(eb, "Reflex Offset (ns)",
                 -1_000_000L, 1_000_000L, CoolConfig.reflexOffsetNs));
         reflex.addEntry(intSlider(eb, "Reflex FPS Cap", 0, 1000, CoolConfig.MAX_FPS));
-        SubCategoryBuilder leaf = eb.startSubCategory(Component.literal("Leaf Optimization"));
-        leaf.add(bool(eb, "Advanced Leaf Culling", CoolConfig.useAdvancedLeafCulling));
-        leaf.add(intSlider(eb, "Min Leaf Connections", 1, 6, CoolConfig.minLeafConnections));
-        leaf.add(bool(eb, "Optimize Mangrove", CoolConfig.OPTIMIZE_MANGROVE));
-        render.addEntry(leaf.build());
 
         ConfigCategory particle = builder.getOrCreateCategory(Component.literal("Particle Optimization"));
         particle.addEntry(bool(eb, "Enable Particle Optimization", CoolConfig.ENABLE_PARTICLE_OPTIMIZATION));
