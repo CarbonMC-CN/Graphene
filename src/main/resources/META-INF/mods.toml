@@ -4,7 +4,7 @@ license = "MIT"
 
 [[mods]]
 modId = "graphene"
-version = "1.7.6"
+version = "2.0.0"
 displayName = "Graphene"
 authors = "CarbonMC, ZCRAFT"
 logoFile = "assets/logo.png"

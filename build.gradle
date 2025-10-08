@@ -180,9 +180,6 @@ tasks.withType(JavaCompile).configureEach {
     options.compilerArgs << "-Xlint:deprecation" << "-Xlint:unchecked"
     options.encoding = 'UTF-8'
 }
-tasks.named('classes') {
-    dependsOn tasks.named('copyRefmap')
-}
 shadowJar {
     mergeServiceFiles()
     exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
