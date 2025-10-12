@@ -18,7 +18,7 @@ public abstract class LevelMixin {
             cancellable = true
     )
     private void onEntityTick(Consumer<Entity> consumer, Entity entity, CallbackInfo ci) {
-        if (EntityTickHelper.shouldCancelTick(entity)) {
+        if (EntityTickHelper.shouldSkipTick(entity)) {
             ci.cancel();
         }
     }

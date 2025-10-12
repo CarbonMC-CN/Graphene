@@ -4,10 +4,10 @@ license = "MIT"
 
 [[mods]]
 modId = "graphene"
-version = "2.0.0"
+version = "2.0.5"
 displayName = "Graphene"
 authors = "CarbonMC, ZCRAFT"
-logoFile = "assets/logo.png"
+logoFile = "assets/graphene/logo.png"
 description = '''One of the best optimization mods'''
 
 [[dependencies.graphene]]

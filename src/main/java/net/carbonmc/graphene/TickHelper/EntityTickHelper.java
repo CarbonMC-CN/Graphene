@@ -1,9 +1,7 @@
 package net.carbonmc.graphene.TickHelper;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.collect.ImmutableSet;
-import net.carbonmc.graphene.api.IOptimizableEntity;
+import com.google.common.collect.Sets;
 import net.carbonmc.graphene.config.CoolConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -11,153 +9,109 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.raid.Raider;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
+import java.util.regex.Pattern;
 
 @Mod.EventBusSubscriber
 public final class EntityTickHelper {
-    private static final AtomicReference<Set<EntityType<?>>> ENTITY_WHITELIST = new AtomicReference<>(Collections.emptySet());
-    private static final AtomicReference<Set<Item>> ITEM_WHITELIST = new AtomicReference<>(Collections.emptySet());
-    private static final Cache<EntityType<?>, Boolean> BOSS_MOB_CACHE = Caffeine.newBuilder()
-            .maximumSize(100)
-            .executor(Runnable::run)
-            .build();
+    private static volatile boolean enabled                 = true;
+    private static volatile boolean tickRaidersInRaid       = true;
+    private static volatile int horizontalRange             = 32;
+    private static volatile int verticalRange               = 16;
+    private static volatile boolean ignoreDeadEntities      = true; // 新增配置项
 
-    private static final Set<EntityType<?>> BOSS_TYPES = ImmutableSet.of(
-            EntityType.ENDER_DRAGON,
-            EntityType.WITHER,
-            EntityType.ELDER_GUARDIAN,
-            EntityType.WARDEN
-    );
-
-    private static final ExecutorService TICK_EXECUTOR = Executors.newWorkStealingPool();
-
-    private static volatile boolean optimizeEntitiesEnabled = true;
-    private static volatile boolean tickRaidersInRaid = true;
-    private static volatile int horizontalRange = 32;
-    private static volatile int verticalRange = 16;
+    private static final AtomicReference<Set<EntityType<?>>> WHITE_LIST = new AtomicReference<>(Collections.emptySet());
+    private static final AtomicReference<Set<EntityType<?>>> BLACK_LIST = new AtomicReference<>(Collections.emptySet());
+    private static final List<WildcardPattern> WHITE_PATTERNS = new ArrayList<>();
+    private static final List<WildcardPattern> BLACK_PATTERNS = new ArrayList<>();
 
     static {
-        refreshWhitelists();
-        updateConfigCache();
+        reloadConfig();
     }
 
     @SubscribeEvent
-    public static void onServerTick(TickEvent.ServerTickEvent event) {
-        if (event.phase == TickEvent.Phase.START) {
-            updateConfigCache();
-        }
+    public static void onServerTick(TickEvent.ServerTickEvent e) {
+        if (e.phase == TickEvent.Phase.START) reloadConfig();
     }
 
-    private static void updateConfigCache() {
-        optimizeEntitiesEnabled = CoolConfig.optimizeEntities.get();
-        tickRaidersInRaid = CoolConfig.tickRaidersInRaid.get();
-        horizontalRange = CoolConfig.horizontalRange.get();
-        verticalRange = CoolConfig.verticalRange.get();
-    }
+    public static boolean shouldSkipTick(Entity entity) {
+        if (!enabled) return false;
+        if (!(entity instanceof LivingEntity living)) return false;
 
-    public static void refreshWhitelists() {
-        CompletableFuture.runAsync(() -> {
-            ENTITY_WHITELIST.set(ImmutableSet.copyOf(
-                    CoolConfig.entityWhitelist.get().stream()
-                            .map(s -> ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(s)))
-                            .filter(Objects::nonNull)
-                            .collect(Collectors.toSet())
-            ));
-
-            ITEM_WHITELIST.set(ImmutableSet.copyOf(
-                    CoolConfig.itemWhitelist.get().stream()
-                            .map(s -> ForgeRegistries.ITEMS.getValue(new ResourceLocation(s)))
-                            .filter(Objects::nonNull)
-                            .collect(Collectors.toSet())
-            ));
-        }, TICK_EXECUTOR);
-    }
-
-    public static boolean shouldCancelTick(@NotNull Entity entity) {
-        if (!optimizeEntitiesEnabled) {
-            return false;
-        }
-        Level level = entity.level();
-        if (level == null) {
-            return false;
-        }
-        if (entity instanceof Player ||
-                ENTITY_WHITELIST.get().contains(entity.getType()) ||
-                entity instanceof Raider) {
+        // 死亡实体拥有绝对豁免权
+        if (ignoreDeadEntities && !living.isAlive()) {
             return false;
         }
 
-        if (!(entity instanceof LivingEntity living) || !living.isAlive()) {
-            return false;
-        }
-
-        if (entity instanceof IOptimizableEntity opt && opt.shouldAlwaysTick()) {
-            return false;
-        }
-
-
-        return performFullChecks(living, level);
-    }
-
-    private static boolean performFullChecks(LivingEntity entity, Level level) {
-        BlockPos pos = entity.blockPosition();
-
+        if (!living.isAlive()) return true;
 
         EntityType<?> type = entity.getType();
-        if (isBossMob(type, entity)) {
+        if (matchesWildcard(type, BLACK_PATTERNS) || BLACK_LIST.get().contains(type)) {
+            return true;
+        }
+        if (matchesWildcard(type, WHITE_PATTERNS) || WHITE_LIST.get().contains(type)) {
             return false;
         }
+        if (tickRaidersInRaid && isRaiderInRaid(living)) return false;
+        return !isNearPlayer(living);
+    }
 
+    private static void reloadConfig() {
+        enabled               = CoolConfig.optimizeEntities.get();
+        tickRaidersInRaid     = CoolConfig.tickRaidersInRaid.get();
+        horizontalRange       = CoolConfig.horizontalRange.get();
+        verticalRange         = CoolConfig.verticalRange.get();
+        ignoreDeadEntities    = CoolConfig.ignoreDeadEntities.get(); // 从配置加载
+        List<? extends String> whiteRaw = CoolConfig.entityWhitelist.get();
 
-        if (tickRaidersInRaid && isInRaid(entity, level, pos)) {
-            return false;
+        Set<EntityType<?>> whiteIds = Sets.newHashSet();
+        WHITE_PATTERNS.clear();
+        BLACK_PATTERNS.clear();
+
+        whiteRaw.forEach(s -> parseEntry(s, whiteIds));
+        WHITE_LIST.set(ImmutableSet.copyOf(whiteIds));
+    }
+
+    private static void parseEntry(String raw, Set<EntityType<?>> idTarget) {
+        if (raw.contains("*") || raw.contains("?")) {
+            EntityTickHelper.WHITE_PATTERNS.add(new WildcardPattern(raw));
+        } else {
+            EntityType<?> type = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(raw));
+            if (type != null) idTarget.add(type);
         }
-
-        return !checkNearbyPlayers(level, pos);
     }
 
-    private static boolean isBossMob(EntityType<?> type, LivingEntity entity) {
-        return BOSS_TYPES.contains(type) ||
-                BOSS_MOB_CACHE.get(type, t -> entity instanceof Mob mob && mob.isNoAi());
+    private static boolean matchesWildcard(EntityType<?> type, List<WildcardPattern> list) {
+        ResourceLocation id = ForgeRegistries.ENTITY_TYPES.getKey(type);
+        if (id == null) return false;
+        String str = id.toString();
+        for (WildcardPattern p : list) if (p.matches(str)) return true;
+        return false;
     }
 
-    private static boolean isInRaid(Entity entity, Level level, BlockPos pos) {
-        return level instanceof ServerLevel serverLevel &&
-                serverLevel.isRaided(pos) &&
-                (entity instanceof Raider ||
-                        (entity instanceof IOptimizableEntity opt && opt.shouldTickInRaid()));
+    private static boolean isRaiderInRaid(LivingEntity e) {
+        return e instanceof net.minecraft.world.entity.raid.Raider raider && raider.isAlive() && raider.hasActiveRaid();
     }
 
+    private static boolean isNearPlayer(LivingEntity entity) {
+        Level level = entity.level();
+        if (!(level instanceof ServerLevel sl)) return true;
+        BlockPos pos = entity.blockPosition();
 
-    private static boolean checkNearbyPlayers(Level level, BlockPos pos) {
-        horizontalRange = Math.min(horizontalRange, 128);
-        verticalRange   = Math.min(verticalRange, 64);
-        if (level.players().isEmpty()) {
-            return false;
-        }
+        int cx = pos.getX() >> 4;
+        int cz = pos.getZ() >> 4;
+        int radius = (horizontalRange >> 4) + 1;
 
-        AABB area = new AABB(
+        AABB box = new AABB(
                 pos.getX() - horizontalRange,
                 pos.getY() - verticalRange,
                 pos.getZ() - horizontalRange,
@@ -166,25 +120,25 @@ public final class EntityTickHelper {
                 pos.getZ() + horizontalRange
         );
 
-
-        List<Player> players = level.getEntitiesOfClass(Player.class, area);
-        for (Player player : players) {
-            if (player.isAlive()) {
-                return true;
-            }
+        for (Player player : sl.players()) {
+            if (!player.isAlive()) continue;
+            BlockPos ppos = player.blockPosition();
+            int pcx = ppos.getX() >> 4;
+            int pcz = ppos.getZ() >> 4;
+            if (Math.abs(pcx - cx) > radius || Math.abs(pcz - cz) > radius) continue;
+            if (player.getBoundingBox().intersects(box)) return true;
         }
         return false;
     }
 
-    public static void shutdown() {
-        TICK_EXECUTOR.shutdownNow();
-        try {
-            if (!TICK_EXECUTOR.awaitTermination(1, TimeUnit.SECONDS)) {
-                TICK_EXECUTOR.shutdownNow();
-            }
-        } catch (InterruptedException e) {
-            TICK_EXECUTOR.shutdownNow();
-            Thread.currentThread().interrupt();
+    private static final class WildcardPattern {
+        private final Pattern regex;
+        WildcardPattern(String raw) {
+            String s = raw.replace("?", ".{1}").replace("*", ".*");
+            this.regex = Pattern.compile("^" + s + "$");
+        }
+        boolean matches(String str) {
+            return regex.matcher(str).matches();
         }
     }
 }

@@ -1,17 +1,21 @@
-// GrapheneClient.java - 修复后的完整文件
 package net.carbonmc.graphene.client;
 
 import net.carbonmc.graphene.client.gui.ClothConfigScreenFactory;
 import net.carbonmc.graphene.client.gui.GUIEN;
+import net.carbonmc.graphene.engine.cull.AsyncTracer;
+import net.carbonmc.graphene.util.Fpsu;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.common.Mod;
 
 @OnlyIn(Dist.CLIENT)
 public class GrapheneClient {
+    public static Fpsu displayController;
     public static void init() {
         MinecraftForge.EVENT_BUS.register(ItemCountRenderer.class);
         String language = Minecraft.getInstance().options.languageCode;
@@ -31,5 +35,8 @@ public class GrapheneClient {
                     )
             );
         }
+    }
+    public static void stop(){
+        AsyncTracer.shutdown();
     }
 }

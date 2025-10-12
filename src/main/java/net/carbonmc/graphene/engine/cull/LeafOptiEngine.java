@@ -35,7 +35,7 @@ public final class LeafOptiEngine {
     }
 
     public static boolean shouldCullFace(BlockGetter level, BlockPos pos, Direction face) {
-        long cacheKey = ((long)pos.asLong() << 8) | face.ordinal();
+        long cacheKey = (pos.asLong() << 8) | face.ordinal();
         Boolean cached = CULL_CACHE.getIfPresent(cacheKey);
         if (cached != null) return cached;
 

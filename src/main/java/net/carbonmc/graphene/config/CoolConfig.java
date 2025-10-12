@@ -2,11 +2,10 @@
 package net.carbonmc.graphene.config;
 
 import net.minecraftforge.common.ForgeConfigSpec;
+import org.apache.commons.math3.optim.MaxIter;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 
 public class CoolConfig {
@@ -33,6 +32,7 @@ public class CoolConfig {
     public static final ForgeConfigSpec.BooleanValue FIX_PEARL_LEAK;
     public static final ForgeConfigSpec.BooleanValue FIX_PROJECTILE_LERP;
     // ==================== 渲染优化 | Rendering Optimization ====================
+    public static final ForgeConfigSpec.IntValue UDT;
     public static final ForgeConfigSpec.BooleanValue BambooLight;
     public static final ForgeConfigSpec.BooleanValue REDUCE_FPS_WHEN_INACTIVE;
     public static final ForgeConfigSpec.IntValue INACTIVE_FPS_LIMIT;
@@ -50,7 +50,6 @@ public class CoolConfig {
     public static final ForgeConfigSpec.BooleanValue OPTIMIZE_TRAPPED_CHESTS;
     public static final ForgeConfigSpec.IntValue MAX_RENDER_DISTANCE;
     // ==================== 实体优化 | Entity Optimization ====================
-    public static ForgeConfigSpec.BooleanValue disableEntityCollisions;
     public static ForgeConfigSpec.BooleanValue optimizeEntities;
     public static final ForgeConfigSpec.BooleanValue OPTIMIZE_ENTITY_CLEANUP;
     public static ForgeConfigSpec.IntValue horizontalRange;
@@ -167,7 +166,10 @@ public class CoolConfig {
         fpsoo = BUILDER
                 .comment("减少渲染延迟，把「把最终画面从 MC 的离屏 FBO（MainTarget）拷贝到屏幕」这一步，由“画一个全屏三角形”改成了“一次 GPU 内部的 glBlitFramebuffer 指令”")
                 .define("fpsoo", true);
-
+        UDT = BUILDER.comment(
+                        "输入显示器刷新率",
+                        "可能提升显示出来的帧率，但实际仍为您显示器能处理的部分，哪怕不使用这个功能也是如此")
+                .defineInRange("minConnections", 60, 10, 360);
         BUILDER.pop();
         BUILDER.push("chest_optimization");
 
@@ -207,7 +209,20 @@ public class CoolConfig {
                         "Enable mangrove roots optimization")
                 .define("optimizeMangrove", true);
         BUILDER.pop(); // 树叶优化
-
+        BUILDER.push("路径追踪 | Path Tracing");
+        tracingThreads = BUILDER.comment(
+                        "路径追踪线程数 (1-8)",
+                        "Number of threads for path tracing (1-8)")
+                .defineInRange("tracingThreads", 4, 1, 8);
+        traceDistance = BUILDER.comment(
+                        "最大追踪距离（方块）",
+                        "Max tracing distance in blocks")
+                .defineInRange("traceDistance", 6.0, 1.0, 16.0);
+        fallbackDistance = BUILDER.comment(
+                        "回退简单剔除距离（方块）",
+                        "Fallback simple culling distance in blocks")
+                .defineInRange("fallbackDistance", 16.0, 4.0, 32.0);
+        BUILDER.pop(); // 路径追踪
         // 非活动状态优化
         BUILDER.push("非活动状态优化 | Inactive Optimization");
         REDUCE_FPS_WHEN_INACTIVE = BUILDER.comment(
@@ -232,10 +247,6 @@ public class CoolConfig {
         // ==================== 实体优化设置 | Entity Optimization Settings ====================
         BUILDER.comment("实体优化 | Entity Optimization").push("entity_optimization");
 
-        disableEntityCollisions = BUILDER.comment(
-                        "优化实体碰撞检测",
-                        "Optimize entity collision detection")
-                .define("disableEntityCollisions", true);
 
         BUILDER.push("实体Tick优化 | Entity Tick Optimization");
         optimizeEntities = BUILDER.comment(

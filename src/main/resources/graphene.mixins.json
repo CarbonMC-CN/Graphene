@@ -18,11 +18,8 @@
     "tickstop.EntityTypeMixin",
     "tickstop.LevelMixin"
   ],
-  "server": [
-    "server.MixinWorldGenRegion"
-  ],
   "client": [
-    "MemoryLeakFix.client.ScreenshotByteBufferLeakFixMixin",
+    "client.button.AbstractWidgetMixin",
     "client.chest.OptimizedChestBlockMixin",
     "client.chest.OptimizedChestRenderer",
     "client.chest.OptimizedEnderChestMixin",
@@ -45,10 +42,10 @@
     "client.renderer.particle.ParticleAccessor",
     "client.renderer.reflex.ReflexSchedulerMixin",
     "client.renderer.skip.GameRendererMixin",
+    "client.renderer.skip.MinecraftMixin",
+    "client.renderer.skip.RenderSystemMixin",
     "client.renderer.sky.MixinWorldRenderer",
-    "client.button.AbstractWidgetMixin",
-    "client.button.SliderWidgetMixin"
-
+    "MemoryLeakFix.client.ScreenshotByteBufferLeakFixMixin"
   ],
   "injectors": {
     "defaultRequire": 1,

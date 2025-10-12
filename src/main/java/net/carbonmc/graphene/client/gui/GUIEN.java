@@ -31,10 +31,10 @@ public final class GUIEN {
         compat.addEntry(bool(eb, "Fix Projectile Lerp", CoolConfig.FIX_PROJECTILE_LERP));
         ConfigCategory render = builder.getOrCreateCategory(Component.literal("Rendering Optimization"));
         render.addEntry(bool(eb, "Skip Outline When No Glowing", CoolConfig.skipOutlineWhenNoGlowing));
-        SubCategoryBuilder fps = eb.startSubCategory(Component.literal("Reduce Render Latency"));
-        fps.add(bool(eb, "Enable Optimization", CoolConfig.fpsoo));
+        SubCategoryBuilder fps = eb.startSubCategory(Component.literal("Fps"));
+        fps.add(bool(eb, "Reduce Render Latency", CoolConfig.fpsoo));
+        fps.add(intSlider(eb, "Fill in the screen refresh rate", 10, 360, CoolConfig.UDT));
         render.addEntry(fps.build());
-
         SubCategoryBuilder chest = eb.startSubCategory(Component.literal("Chest Rendering Optimization"));
         chest.add(bool(eb, "Enable Optimization", CoolConfig.ENABLE_OPTIMIZATION));
         chest.add(enumOpt(eb, "Render Mode", CoolConfig.RenderMode.class, CoolConfig.RENDER_MODE));
@@ -84,14 +84,13 @@ public final class GUIEN {
         light.addEntry(bool(eb, "Lighting Optimization", CoolConfig.ENABLE_FIXED_LIGHT));
         light.addEntry(bool(eb, "Bamboo Lighting Optimization - Skip needless lighting calc for bamboo", CoolConfig.BambooLight));
 
-        ConfigCategory math = builder.getOrCreateCategory(Component.literal("Math Performance"));
         ConfigCategory entity = builder.getOrCreateCategory(Component.literal("Entity Optimization"));
-        entity.addEntry(bool(eb, "Disable Entity Collisions", CoolConfig.disableEntityCollisions));
-        entity.addEntry(bool(eb, "Entity Tick Optimization", CoolConfig.optimizeEntities));
+         entity.addEntry(bool(eb, "Entity Tick Optimization", CoolConfig.optimizeEntities));
 
         entity.addEntry(intSlider(eb, "Horizontal Range", 1, 256, CoolConfig.horizontalRange));
         entity.addEntry(intSlider(eb, "Vertical Range", 1, 256, CoolConfig.verticalRange));
         entity.addEntry(bool(eb, "Ignore Dead Entities", CoolConfig.ignoreDeadEntities));
+        entity.addEntry(stringList(eb, "EntityWhiteList", CoolConfig.entityWhitelist));
         entity.addEntry(bool(eb, "Clean Up Dead Entities", CoolConfig.OPTIMIZE_ENTITY_CLEANUP));
         entity.addEntry(bool(eb, "Keep Raiders Ticking During Raid", CoolConfig.tickRaidersInRaid));
         ConfigCategory item = builder.getOrCreateCategory(Component.literal("Item Optimization"));
@@ -152,7 +151,7 @@ public final class GUIEN {
         List<String> currentValue = (List<String>) value.get();
         return eb.startStrList(Component.literal(key), currentValue)
                 .setTooltip(Component.literal(key))
-                .setSaveConsumer(newList -> value.set((List<? extends String>) newList))
+                .setSaveConsumer(value::set)
                 .build();
     }
     private static IntegerSliderEntry intSlider(ConfigEntryBuilder eb,

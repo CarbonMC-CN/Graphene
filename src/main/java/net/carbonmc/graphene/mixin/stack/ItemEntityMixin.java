@@ -17,11 +17,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Comparator;
 import java.util.List;
 
-import static net.carbonmc.graphene.config.CoolConfig.OpenIO;
 
 @Mixin(ItemEntity.class)
 public abstract class ItemEntityMixin {
     private static final int MERGE_COOLDOWN_TICKS = 5;
+    private static final int DEFAULT_MAX_STACK = Integer.MAX_VALUE - 100;
 
     @Shadow public abstract ItemStack getItem();
     @Shadow public abstract void setItem(ItemStack stack);
@@ -45,7 +45,7 @@ public abstract class ItemEntityMixin {
 
     @Unique
     private boolean shouldProcess() {
-        return OpenIO.get() && !((ItemEntity)(Object)this).level().isClientSide;
+        return CoolConfig.OpenIO.get() && !((ItemEntity)(Object)this).level().isClientSide;
     }
 
     @Unique
@@ -56,10 +56,10 @@ public abstract class ItemEntityMixin {
 
     @Unique
     private void tryMergeItems(ItemEntity self) {
-        if (!OpenIO.get()) return;
+        if (!CoolConfig.OpenIO.get()) return;
 
         ItemStack stack = self.getItem();
-        int maxStack = getActualMaxStackSize(stack);
+        int maxStack = getEffectiveMaxStackSize();
 
         if (stack.getCount() >= maxStack) return;
 
@@ -70,12 +70,9 @@ public abstract class ItemEntityMixin {
     }
 
     @Unique
-    private int getActualMaxStackSize(ItemStack stack) {
+    private int getEffectiveMaxStackSize() {
         int configMax = CoolConfig.maxStackSize.get();
-        if (configMax <= 0) {
-            return stack.getMaxStackSize();
-        }
-        return Math.min(configMax, stack.getMaxStackSize());
+        return configMax > 0 ? configMax : DEFAULT_MAX_STACK;
     }
 
     @Unique
@@ -127,7 +124,7 @@ public abstract class ItemEntityMixin {
 
     @Unique
     private void updateStackDisplay(ItemEntity entity) {
-        if (!OpenIO.get() || !CoolConfig.showStackCount.get()) {
+        if (!CoolConfig.OpenIO.get() || !CoolConfig.showStackCount.get()) {
             clearDisplay(entity);
             return;
         }
@@ -164,14 +161,13 @@ public abstract class ItemEntityMixin {
 
         return isSameItem(selfStack, otherStack) &&
                 isMergeAllowed(otherStack, listMode, itemList) &&
-                (!CoolConfig.lockMaxedStacks.get() || otherStack.getCount() < getActualMaxStackSize(otherStack));
+                (!CoolConfig.lockMaxedStacks.get() || otherStack.getCount() < getEffectiveMaxStackSize());
     }
 
     @Unique
     private boolean isSameItem(ItemStack a, ItemStack b) {
         return ItemStack.isSameItemSameTags(a, b);
     }
-
     @Unique
     private boolean isMergeAllowed(ItemStack stack, int listMode, List<? extends String> itemList) {
         if (listMode == 0) return true;

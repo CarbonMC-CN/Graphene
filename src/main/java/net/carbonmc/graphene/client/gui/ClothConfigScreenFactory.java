@@ -25,19 +25,29 @@ public final class ClothConfigScreenFactory {
 
         ConfigEntryBuilder eb = builder.entryBuilder();
 
-        ConfigCategory compat = builder.getOrCreateCategory(Component.literal("高版本优化移植"));
+        ConfigCategory compat = builder.getOrCreateCategory(Component.translatable("graphene.gui.title.high"));
         compat.addEntry(bool(eb, "修复珍珠泄漏", CoolConfig.FIX_PEARL_LEAK));
         compat.addEntry(bool(eb, "修复抛射物插值", CoolConfig.FIX_PROJECTILE_LERP));
+
         ConfigCategory render = builder.getOrCreateCategory(Component.literal("渲染优化"));
         render.addEntry(bool(eb, "无发光实体时跳过轮廓", CoolConfig.skipOutlineWhenNoGlowing));
-        SubCategoryBuilder fps = eb.startSubCategory(Component.literal("降低渲染延迟"));
-        fps.add(bool(eb, "启用优化", CoolConfig.fpsoo));
+
+        SubCategoryBuilder fps = eb.startSubCategory(Component.literal("Fps"));
+        fps.add(bool(eb, "降低渲染延迟", CoolConfig.fpsoo));
+        fps.add(intSlider(eb, "填写屏幕刷新率", 10, 360, CoolConfig.UDT));
         render.addEntry(fps.build());
+
         SubCategoryBuilder leaf = eb.startSubCategory(Component.literal("树叶优化"));
         leaf.add(bool(eb, "高级树叶剔除", CoolConfig.useAdvancedLeafCulling));
         leaf.add(intSlider(eb, "最小树叶连接", 1, 6, CoolConfig.minLeafConnections));
         leaf.add(bool(eb, "优化红树林", CoolConfig.OPTIMIZE_MANGROVE));
         render.addEntry(leaf.build());
+        SubCategoryBuilder trace = eb.startSubCategory(Component.literal("路径追踪"));
+        trace.add(intSlider(eb, "追踪线程数", 1, 8, CoolConfig.tracingThreads));
+        trace.add(doubleField(eb, "追踪距离", 1, 16, CoolConfig.traceDistance));
+        trace.add(doubleField(eb, "回退距离", 4, 32, CoolConfig.fallbackDistance));
+        render.addEntry(trace.build());
+
         SubCategoryBuilder chest = eb.startSubCategory(Component.literal("箱子渲染优化"));
         chest.add(bool(eb, "启用优化", CoolConfig.ENABLE_OPTIMIZATION));
         chest.add(enumOpt(eb, "渲染模式", CoolConfig.RenderMode.class, CoolConfig.RENDER_MODE));
@@ -83,12 +93,12 @@ public final class ClothConfigScreenFactory {
         light.addEntry(bool(eb, "光照优化", CoolConfig.ENABLE_FIXED_LIGHT));
         light.addEntry(bool(eb, "竹子光照优化-取消竹子无意义的光照计算", CoolConfig.BambooLight));
 
-        ConfigCategory math = builder.getOrCreateCategory(Component.literal("数学性能"));
+
         ConfigCategory entity = builder.getOrCreateCategory(Component.literal("实体优化"));
-        entity.addEntry(bool(eb, "禁用实体碰撞", CoolConfig.disableEntityCollisions));
         entity.addEntry(bool(eb, "实体Tick优化", CoolConfig.optimizeEntities));
         entity.addEntry(intSlider(eb, "水平范围", 1, 256, CoolConfig.horizontalRange));
         entity.addEntry(intSlider(eb, "垂直范围", 1, 256, CoolConfig.verticalRange));
+        entity.addEntry(stringList(eb, "实体优化白名单", CoolConfig.entityWhitelist));
         entity.addEntry(bool(eb, "忽略死亡实体", CoolConfig.ignoreDeadEntities));
         entity.addEntry(bool(eb, "清理死亡实体", CoolConfig.OPTIMIZE_ENTITY_CLEANUP));
         entity.addEntry(bool(eb, "袭击时保持袭击者Tick", CoolConfig.tickRaidersInRaid));
@@ -150,7 +160,7 @@ public final class ClothConfigScreenFactory {
         List<String> currentValue = (List<String>) value.get();
         return eb.startStrList(Component.literal(key), currentValue)
                 .setTooltip(Component.literal(key))
-                .setSaveConsumer(newList -> value.set((List<? extends String>) newList))
+                .setSaveConsumer(value::set)
                 .build();
     }
     private static IntegerSliderEntry intSlider(ConfigEntryBuilder eb,
